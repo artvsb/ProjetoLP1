@@ -1,6 +1,9 @@
 package model;
+import java.util.UUID;
+// ID único
 
 public abstract class Pessoa {
+	private UUID id;
     protected String nome;
     protected String login;
     protected String senha;
@@ -11,8 +14,13 @@ public abstract class Pessoa {
 
     }
 
+	public UUID getId() { return id; }
+
+	public Pessoa() { this.id = UUID.randomUUID(); }
+
     public Pessoa(String nome, String login, String senha, int telefone) {
-        this.nome = nome;
+        this.id = UUID.randomUUID();
+		this.nome = nome;
         this.login = login;
         this.senha = senha;
         this.telefone = telefone;

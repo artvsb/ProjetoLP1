@@ -1,6 +1,9 @@
 package model;
 
-public class Administrador extends Pessoa {
+import enums.NivelAcesso;
+import model.interfaces.Gerenciavel;
+
+public class Administrador extends Pessoa implements Gerenciavel {
 	private String nivelAcesso;
 	private boolean atv;
 
@@ -9,11 +12,15 @@ public class Administrador extends Pessoa {
 		this.atv = true;
 	}
 
-	public Administrador(String nome, String login, String senha, int telefone, String nivelAcesso) {
+	public Administrador(String nome, String login, String senha, int telefone, NivelAcesso nivelAcesso) {
 			super(nome, login, senha, telefone);
 			this.nivelAcesso = nivelAcesso;
 			this.atv = true;
 	}
+
+	public NivelAcesso getNivelAcesso() { return nivelAcesso; }
+
+	public void setNivelAcesso(NivelAcesso nivelAcesso) { this.nivelAcesso = nivelAcesso; }
 
 	public String getNivelAcesso() {
 		return nivelAcesso;
@@ -25,8 +32,10 @@ public class Administrador extends Pessoa {
 
 	public boolean isAtv() { return atv; }
 
+	@Override
 	public void desativar() { this.atv = false; }
 
+	@Override
 	public void ativar() { this.atv = true; }
 
 	@Override
