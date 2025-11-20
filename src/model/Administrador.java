@@ -7,7 +7,7 @@ public class Administrador extends Pessoa implements Gerenciavel {
 	private String nivelAcesso;
 	private boolean atv;
 
-	public Administrador() {
+	public Administrador(String nome, String login, String senha, String telefone, NivelAcesso nivelAcesso) {
 		super();
 		this.atv = true;
 	}
@@ -21,14 +21,6 @@ public class Administrador extends Pessoa implements Gerenciavel {
 	public NivelAcesso getNivelAcesso() { return nivelAcesso; }
 
 	public void setNivelAcesso(NivelAcesso nivelAcesso) { this.nivelAcesso = nivelAcesso; }
-
-	public String getNivelAcesso() {
-		return nivelAcesso;
-	}
-
-	public void setNivelAcesso(String nivelAcesso) {
-		this.nivelAcesso = nivelAcesso;
-	}
 
 	public boolean isAtv() { return atv; }
 

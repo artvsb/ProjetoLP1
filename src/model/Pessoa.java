@@ -9,11 +9,6 @@ public abstract class Pessoa {
     protected String senha;
     protected int telefone;
 
-
-    public Pessoa() {
-
-    }
-
 	public UUID getId() { return id; }
 
 	public Pessoa() { this.id = UUID.randomUUID(); }
