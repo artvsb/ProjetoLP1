@@ -41,6 +41,6 @@ public class ItemPedido {
 
 	@Override
 	public String toString() {
-		return qtd + " x " + nome + " = R$ " + getSubtotal());
+		return qtd + " x " + nome + " = R$ " + getSubtotal();
 	}
 }

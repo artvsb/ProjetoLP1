@@ -3,6 +3,6 @@ package enums;
 public enum StatusPedido {
 	EM_PREPARO,
 	PRONTO,
-	SERVIDO,
+	ENTREGUE,
 	CANCELADO
 }
