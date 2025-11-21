@@ -1,7 +1,8 @@
 # ProjetoLP1
 Unidade 2
 
-Disciplina: Linguagem de Programação I 
+Disciplina: Linguagem de Programação I
+
 Profª Fernanda Dias
 
 Título: Menu Digital
