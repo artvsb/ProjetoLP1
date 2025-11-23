@@ -5,14 +5,19 @@ public class ItemPedido {
 	private double preco;
 	private int qtd;
 	private int tempoPreparo;
+	private String descricao;
 
-
-	public ItemPedido(String nome, double preco, int qtd, int tempoPreparo) {
+	public ItemPedido(String nome, double preco, int qtd, int tempoPreparo, String descricao) {
 		this.nome = nome;
 		this.preco = preco;
 		this.qtd = qtd;
 		this.tempoPreparo = tempoPreparo;
+		this.descricao = descricao;
 	}
+
+	public String getDescricao() {	return descricao;	}
+
+	public void setDescricao(String descricao) {	this.descricao = descricao;		}
 
 	public String getNome() {
 		return nome;
@@ -52,6 +57,6 @@ public class ItemPedido {
 
 	@Override
 	public String toString() {
-		return qtd + " x " + nome + " = R$ " + getSubtotal();
+		return qtd + " x " + nome + " = R$ " + getSubtotal() + "\nDescrição: " + descricao;
 	}
 }

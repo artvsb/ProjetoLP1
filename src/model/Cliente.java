@@ -1,13 +1,12 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Cliente extends Pessoa {
 	private String mesa;
 	private List<Pedido> pedidos;
 	private List<Cliente> clientes;
+	private Set<UUID> historicoRestaurantes = new HashSet<>();
 
 	public Cliente() {
 		super();
@@ -68,7 +67,7 @@ public class Cliente extends Pessoa {
 		System.out.println("Pedidos do cliente " + nome + ":");
 		for (Pedido pp : pedidos) {
 			System.out.println("Pedido nr. " + pp.getId() +
-					"\nStatus: " + pp.getStatus() +
+					"\nStatus: " + pp.getStatusPedido() +
 					"\nTotal: R$ " + String.format("%.2f", pp.getTotal()));
 		}
 	}
@@ -83,6 +82,17 @@ public class Cliente extends Pessoa {
 		System.out.println("Mesa nr " + mesaQR);
 	}
 
+	public void addRestauranteHistorico(UUID idRestaurant) {
+		historicoRestaurantes.add(idRestaurant);
+	}
+
+	public boolean frequentouRestaurante (UUID idRestaurant) {
+		return historicoRestaurantes.contains(idRestaurant);
+	}
+
+	public Set<UUID> getHistoricoRestaurantes() {
+		return historicoRestaurantes;
+	}
 
 	@Override
 	public String toString() {

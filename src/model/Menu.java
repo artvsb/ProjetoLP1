@@ -15,16 +15,23 @@ public class Menu {
 
 	public void exibirMenu() {
 		System.out.println("================== MENU ==================");
-
-		for (int i = 0; i < itens.size(); i++) {
-			ItemPedido item = itens.get(i);
-			System.out.printf("%d - %s | R$ %.2f | %d min\n",
-					i + 1, item.getNome(), item.getPreco(), item.getTempoPreparo());
-		}
-
 		if (itens.isEmpty()) {
 			System.out.println("Cardápio Vazio!");
+		} else {
+			for (int i = 0; i < itens.size(); i++) {
+				ItemPedido item = itens.get(i);
+				System.out.printf("%d - %s | R$ %.2f | %d min\n",
+						i + 1,
+						item.getNome(),
+						item.getPreco(),
+						item.getTempoPreparo(),
+						item.getDescricao()
+				);
+				System.out.println("Descrição: " + item.getDescricao());
+				System.out.println("---------------------------------------");
+			}
 		}
+
 		System.out.println("==========================================");
 	}
 

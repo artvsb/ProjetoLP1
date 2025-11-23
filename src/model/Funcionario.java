@@ -78,7 +78,7 @@ public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
 	public void aceitarPedido(Pedido pp) {
 		this.pp = pp;
 		if (checkPoderes(Poderes.ACEITAR_PEDIDO)) {
-			pp.setStatus(StatusPedido.PRONTO);
+			pp.setStatusPedido(StatusPedido.PRONTO);
 			System.out.println("Pedido aceito e está agora PRONTO.");
 		} else {
 			System.out.println("Permissão negada para aceitar pedidos.");
@@ -87,7 +87,7 @@ public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
 
 	public void recusarPedido(Pedido pedido, String justificativa) {
 		if (checkPoderes(Poderes.REJEITAR_PEDIDO)) {
-			pedido.setStatus(StatusPedido.CANCELADO);
+			pedido.setStatusPedido(StatusPedido.CANCELADO);
 			System.out.println("Pedido foi recusado. Justificativa: " + justificativa);
 		} else {
 			System.out.println("Permissão negada para recusar pedidos.");

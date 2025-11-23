@@ -3,29 +3,37 @@ package model;
 import enums.PrioridadeEntrega;
 import enums.StatusPedido;
 import enums.TipoAtendimento;
+import enums.*;
 
 import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 
+
 public class Pedido {
 	private UUID id;
+	private Cliente cc;
+	private Restaurante rr;
+	private LocalDateTime dataHoraPronto;
 	private String mesa, justifRecusa;
 	private List<ItemPedido> itens;
-	private StatusPedido status;
+	private StatusPedido statusPedido = StatusPedido.EM_PREPARO;
 	private TipoAtendimento tipoAtendimento;
+	private TiposPagamento tipoPagto;
+	private boolean pago;
 	private PrioridadeEntrega prioridadeEntrega = PrioridadeEntrega.NORMAL;
 
 	public Pedido (String mesaOuCliente, TipoAtendimento tipoAtendimento) {
 		this.id = UUID.randomUUID();
 		this.mesa = tipoAtendimento == TipoAtendimento.LOCAL ? mesaOuCliente : null;
 		this.itens = new ArrayList<>();
-		this.status = StatusPedido.EM_PREPARO;
+		this.statusPedido = StatusPedido.EM_PREPARO;
 		this.justifRecusa = null;
 	}
 	/* a terceira linha do mét0do define que o nr da mesa só será definido se o atendimento for local;
@@ -94,12 +102,80 @@ public class Pedido {
 		}
 	}
 
-	public StatusPedido getStatus() {
-		return status;
+	public StatusPedido getStatusPedido() {
+		return statusPedido;
 	}
 
-	public void setStatus(StatusPedido status) {
-		this.status = status;
+	public void setStatusPedido(StatusPedido statusPedido) {
+		this.statusPedido = statusPedido;
+	}
+
+	// Métodos de alterar/consultar o status do pediod  //
+
+	public void marcarPronto() { this.statusPedido = StatusPedido.PRONTO; }
+
+	public void marcarEntregue() {
+		this.statusPedido = StatusPedido.ENTREGUE;
+		this.dataHoraPronto = LocalDateTime.now();
+	}
+
+	public void cancelarPedido() { this.statusPedido = StatusPedido.CANCELADO; }
+
+	public boolean isEntregue() { return this.statusPedido == StatusPedido.ENTREGUE; }
+
+	 // Pagamento
+
+	public void realizarPagamento() {
+		if (pago) {
+			System.out.println("O pedido " + id + " já está pago!");
+		} else {
+			Scanner tcl = new Scanner(System.in);
+
+			System.out.println("Escolha a forma de pagamento: ");
+			System.out.println("1 - Pix");
+			System.out.println("2 - Cartão de Débito");
+			System.out.println("3 - Cartão de Crédito");
+			System.out.println("Opção: ");
+			int opcao = tcl.nextInt();
+			tcl.nextLine();
+
+			switch (opcao) {
+
+				case 1:
+					tipoPagto = TiposPagamento.PIX;
+					System.out.println(); // implementar!
+					break;
+
+				case 2:
+					tipoPagto = TiposPagamento.CARTAO_DEBITO;
+					System.out.println("Insira abaixo as informações do seu cartão de DÉBITO: ");
+					String nrCartao = tcl.nextLine();
+					System.out.println("Insira o mês e o ano de vencimento do cartão no formato (MM/AA): ");
+					String dataVencto = tcl.nextLine();
+					System.out.println("Insira o CVV (código de 3 números localizados atrás do cartão: ");
+					int CVV = tcl.nextInt();
+					System.out.println("Pagamento concluído");
+					break;
+
+				case 3:
+					tipoPagto = TiposPagamento.CARTAO_CREDITO;
+					System.out.println("Insira abaixo as informações do seu cartão de CRÉDITO: ");
+					nrCartao = tcl.nextLine();
+					System.out.println("Insira o mês e o ano de vencimento do cartão no formato (MM/AA): ");
+					dataVencto = tcl.nextLine();
+					System.out.println("Insira o CVV (código de 3 números localizados atrás do cartão: ");
+					CVV = tcl.nextInt();
+					System.out.println("Pagamento concluído");
+					break;
+
+				default:
+					System.out.println("Opção Inválida!");
+					return;
+			}
+
+			this.pago = true;
+			System.out.println("Pagamento realizado com sucesso!");
+		}
 	}
 
 	@Override
@@ -108,7 +184,7 @@ public class Pedido {
 				"\nID: " + id +
 				", \nMesa: " + mesa +
 				", \nItens: " + itens +
-				", \nStatus: " + status;
+				", \nStatus: " + statusPedido;
 	}
 
 	public double getTotal() {
@@ -118,6 +194,10 @@ public class Pedido {
 		}
 		return total;
 	}
+
+	public boolean isPago() { return pago; }
+
+	public TiposPagamento getTipoPagto() { return tipoPagto; }
 
 	public void emitirRecibo() {
 		System.out.println("==============================================");
@@ -141,7 +221,7 @@ public class Pedido {
 		if (prioridadeEntrega == PrioridadeEntrega.PRIORITARIA) {
 			System.out.println("Taxa de entrega prioritária: " + (getTaxaPrioridade() - 1) + "%%");
 		}
-		System.out.println("Status do Pedido: " + this.status);
+		System.out.println("Status do Pedido: " + this.statusPedido);
 		System.out.println("=============================================");
 	}
 
@@ -166,7 +246,7 @@ public class Pedido {
 			writer.printf("TOTAL:                    R$ %.2f\n", getTotal());
 			System.out.println("Tempo estimado de preparo: " + getTempoPreparoEstim() + " minutos");
 			System.out.println("Previsão de entrega: " + getHrPrevistoPedido());
-			writer.println("Status: " + this.status);
+			writer.println("Status: " + this.statusPedido);
 			writer.println("====================================");
 
 			System.out.println("Recibo salvo em: " + nomeArq);
