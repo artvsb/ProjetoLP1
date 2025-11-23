@@ -4,11 +4,14 @@ public class ItemPedido {
 	private String nome;
 	private double preco;
 	private int qtd;
+	private int tempoPreparo;
 
-	public ItemPedido(String nome, double preco, int qtd) {
+
+	public ItemPedido(String nome, double preco, int qtd, int tempoPreparo) {
 		this.nome = nome;
 		this.preco = preco;
 		this.qtd = qtd;
+		this.tempoPreparo = tempoPreparo;
 	}
 
 	public String getNome() {
@@ -37,6 +40,14 @@ public class ItemPedido {
 
 	public double getSubtotal() {
 		return qtd * preco;
+	}
+
+	public int getTempoPreparo() {
+		return tempoPreparo;
+	}
+
+	public void setTempoPreparo(int tempoPreparo) {
+		this.tempoPreparo = tempoPreparo;
 	}
 
 	@Override

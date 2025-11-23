@@ -1,18 +1,22 @@
 package model;
 import enums.CARGO;
 import enums.Poderes;
+import enums.StatusPedido;
+import model.interfaces.CustomMenu;
 import model.interfaces.Gerenciavel;
 
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
-public class Funcionario extends Pessoa implements Gerenciavel {
+public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
     private String especialidade;
     public CARGO cargo;
 	private boolean atv;
 	private Set<Poderes> poderes;
+	private Pedido pp;
 
-    public Funcionario(String nome, String login, String senha, int telefone, CARGO cargo) {
+	public Funcionario(String nome, String login, String senha, int telefone, CARGO cargo) {
 		super(nome, login, senha, telefone);
 		this.cargo = cargo;
 		this.atv = true;
@@ -63,5 +67,40 @@ public class Funcionario extends Pessoa implements Gerenciavel {
 	@Override
 	public boolean isAtv() {
 		return atv;
+	}
+
+	public boolean checkPoderes(Poderes p) { return poderes.contains(p); }
+
+	public void concederPoderes(Poderes p) { poderes.add(p); }
+
+	public void removerPoderes(Poderes p) { poderes.remove(p); }
+
+	public void aceitarPedido(Pedido pp) {
+		this.pp = pp;
+		if (checkPoderes(Poderes.ACEITAR_PEDIDO)) {
+			pp.setStatus(StatusPedido.PRONTO);
+			System.out.println("Pedido aceito e está agora PRONTO.");
+		} else {
+			System.out.println("Permissão negada para aceitar pedidos.");
+		}
+	}
+
+	public void recusarPedido(Pedido pedido, String justificativa) {
+		if (checkPoderes(Poderes.REJEITAR_PEDIDO)) {
+			pedido.setStatus(StatusPedido.CANCELADO);
+			System.out.println("Pedido foi recusado. Justificativa: " + justificativa);
+		} else {
+			System.out.println("Permissão negada para recusar pedidos.");
+		}
+	}
+
+	@Override
+	public void addItemMenu(Menu menu, Scanner tcl) {
+
+	}
+
+	@Override
+	public void delItemMenu(Menu menu, Scanner tcl) {
+
 	}
 }
