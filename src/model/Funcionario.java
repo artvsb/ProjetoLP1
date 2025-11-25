@@ -1,5 +1,6 @@
 package model;
 import enums.CARGO;
+import enums.NivelAcesso;
 import enums.Poderes;
 import enums.StatusPedido;
 import model.interfaces.CustomMenu;
@@ -15,6 +16,7 @@ public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
 	private boolean atv;
 	private Set<Poderes> poderes;
 	private Pedido pp;
+	private NivelAcesso nivelAcesso;
 
 	public Funcionario(String nome, String login, String senha, int telefone, CARGO cargo) {
 		super(nome, login, senha, telefone);
@@ -42,7 +44,15 @@ public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
         return cargo;
     }
 
-    public void setCargo(CARGO cargo) {
+	public NivelAcesso getNivelAcesso() {
+		return nivelAcesso;
+	}
+
+	public void setNivelAcesso(NivelAcesso nivelAcesso) {
+		this.nivelAcesso = nivelAcesso;
+	}
+
+	public void setCargo(CARGO cargo) {
         this.cargo = cargo;
     }
 

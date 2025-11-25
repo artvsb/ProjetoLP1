@@ -1,23 +1,16 @@
 package model;
 
 public class ItemPedido {
-	private String nome;
-	private double preco;
+	private ItemCardapio item;
 	private int qtd;
-	private int tempoPreparo;
-	private String descricao;
+	private String nome;
 
-	public ItemPedido(String nome, double preco, int qtd, int tempoPreparo, String descricao) {
-		this.nome = nome;
-		this.preco = preco;
+	public ItemPedido(ItemCardapio item, int qtd) {
+		this.item = item;
 		this.qtd = qtd;
-		this.tempoPreparo = tempoPreparo;
-		this.descricao = descricao;
 	}
 
-	public String getDescricao() {	return descricao;	}
-
-	public void setDescricao(String descricao) {	this.descricao = descricao;		}
+	public ItemCardapio getItem() { return item; }
 
 	public String getNome() {
 		return nome;
@@ -27,36 +20,17 @@ public class ItemPedido {
 		this.nome = nome;
 	}
 
-	public double getPreco() {
-		return preco;
-	}
+	public int getQtd() { return qtd; }
 
-	public void setPreco(double preco) {
-		this.preco = preco;
-	}
+	public void setQtd(int qtd) { this.qtd = qtd; }
 
-	public int getQtd() {
-		return qtd;
-	}
+	public double getSubtotal() {	return qtd * item.getPreco();	}
 
-	public void setQtd(int qtd) {
-		this.qtd = qtd;
-	}
-
-	public double getSubtotal() {
-		return qtd * preco;
-	}
-
-	public int getTempoPreparo() {
-		return tempoPreparo;
-	}
-
-	public void setTempoPreparo(int tempoPreparo) {
-		this.tempoPreparo = tempoPreparo;
-	}
+	public int getTempoPreparo() {	return item.getTempoPreparo();	}
 
 	@Override
 	public String toString() {
-		return qtd + " x " + nome + " = R$ " + getSubtotal() + "\nDescrição: " + descricao;
+		return String.format("%d x %s = R$ %.2f\nDescrição: %s",
+				qtd, item.getNome(), getSubtotal(), item.getDescricao());
 	}
 }

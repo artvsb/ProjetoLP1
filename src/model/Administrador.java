@@ -6,19 +6,13 @@ import enums.Poderes;
 import model.interfaces.CustomMenu;
 import model.interfaces.Gerenciavel;
 import model.interfaces.VisualizarPerfil;
-import java.util.Map;
+
 import java.util.Scanner;
-import java.util.UUID;
 
 public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, VisualizarPerfil {
 	private NivelAcesso nivelAcesso;
 	private boolean atv;
 	private Restaurante rr;
-
-	public Administrador(String nome, String login, String senha, String telefone, NivelAcesso nivelAcesso) {
-		super();
-		this.atv = true;
-	}
 
 	public Administrador(String nome, String login, String senha, int telefone, NivelAcesso nivelAcesso, Restaurante rr) {
 			super(nome, login, senha, telefone);
@@ -61,7 +55,7 @@ public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, Vi
 
 	@Override
 	public String toString() {
-		return "Administrador: " + "\nNome: " + nome + "\nLogin: " + "\nTelefone: " + "\nNível de Acesso: " + nivelAcesso + "\nAtivo: " + atv;
+		return "Administrador: " + "\nNome: " + nome + "\nLogin: " + login + "\nTelefone: " + telefone + "\nNível de Acesso: " + nivelAcesso + "\nAtivo: " + atv;
 	}
 
 	@Override
@@ -84,7 +78,7 @@ public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, Vi
 			System.out.println("Tempo de preparo médio (min): ");
 			int tempoPreparo = tcl.nextInt();
 
-			menu.addItem(new ItemPedido(nomePrato, preco, 1, tempoPreparo, descricao));
+			menu.addItem(new ItemCardapio(nome, preco, tempoPreparo, descricao));
 			System.out.println("Prato adicionado com sucesso!");
 		}
 	}
@@ -100,37 +94,88 @@ public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, Vi
 			System.out.println("Digite o número do item a remover: ");
 			int indice = tcl.nextInt();
 
-			if (indice < 1 || indice > menu.getItens().size()) {
+			if (indice < 1 || indice > menu.getMenu().size()) {
 				System.out.println("Número Inválido!");
 				return;
 			}
 
-			ItemPedido deletado = menu.getItens().remove(indice - 1);
+			ItemCardapio deletado = menu.getMenu().remove(indice - 1);
 			System.out.println("Item removido: " + deletado.getNome());
 		}
 	}
 
 	@Override
-	public void visualizarPerfil(Cliente cc, Map<UUID, Restaurante> restaurantes) {
-		UUID idRestaurant = rr.getIdRestaurant();
-
-		if (!cc.frequentouRestaurante(idRestaurant)) {
-			System.out.println("O cliente selecionado não pode ser exibido!");
+	public void editarItemMenu(Menu menu, Scanner tcl) {
+		if (nivelAcesso != NivelAcesso.PROPRIETARIO && nivelAcesso != NivelAcesso.GERENCIA) {
+			System.out.println("===== PERMISSÃO NEGADA =====");
+			System.out.println("Opção reservada à GERÊNCIA");
 			return;
 		}
 
-		System.out.println("\n=== PERFIL DO CLIENTE ===");
-		System.out.println("Nome: " + cc.getNome());
-		System.out.println("Histórico de restaurantes frequentados:");
+		if (menu.getMenu().isEmpty()) {
+			System.out.println("Menu está vazio!");
+			return;
+		}
 
-		for (UUID id : cc.getHistoricoRestaurantes()) {
-			Restaurante r = restaurantes.get(id);
-			if (r != null) {
-				System.out.println("- " + r.getNome() +
-						"\nEndereço: " + r.getEndereco());
-			} else {
-				System.out.println("Restaurante não encontrado!");
+		menu.exibirMenu();
+		System.out.println("Digite o número do item que deseja editar: ");
+		int indice = tcl.nextInt();
+		tcl.nextLine(); // consumir quebra de linha
+
+		if (indice < 1 || indice > menu.getMenu().size()) {
+			System.out.println("Número Inválido!");
+			return;
+		}
+
+		ItemCardapio item = menu.getMenu().get(indice - 1);
+
+		System.out.println("Editando item: " + item.getNome());
+
+		System.out.print("Novo nome (ou pressione Enter para manter): ");
+		String novoNome = tcl.nextLine();
+		if (!novoNome.isBlank()) {	item.setNome(novoNome);	}
+
+			System.out.print("Nova descrição (ou pressione Enter para manter): ");
+			String novaDescricao = tcl.nextLine();
+			if (!novaDescricao.isBlank()) { item.setDescricao(novaDescricao); }
+
+			System.out.print("Novo preço (ou -1 para manter): ");
+			double novoPreco = tcl.nextDouble();
+			if (novoPreco >= 0) { item.setPreco(novoPreco); }
+
+			System.out.print("Novo tempo de preparo (minutos, ou -1 para manter): ");
+			int novoTempo = tcl.nextInt();
+			if (novoTempo >= 0) { item.setTempoPreparo(novoTempo); }
+
+			System.out.println("Item atualizado com sucesso!");
+	}
+
+	public void definirTxEntregaPrioritaria(Scanner tcl) {
+		if (nivelAcesso == NivelAcesso.PROPRIETARIO || nivelAcesso == NivelAcesso.GERENCIA) {
+			System.out.println("Apenas gestores podem definir a taxa de entrega prioritária.");
+			return;
+		}
+
+		System.out.println("\n==== DEFINIR TAXA DE ENTREGA PRIORITÁRIA ====");
+		System.out.print("Informe a nova taxa de entrega prioritária (%): ");
+
+		int percentual;
+		try {
+			percentual = Integer.parseInt(tcl.nextLine());
+
+			if (percentual < 0 || percentual > 50) {
+				System.out.println("Taxa inválida. Digite um valor entre 0 e 50%");
+				return;
 			}
+
+			rr.setTxEntregaPrioritaria(percentual);
+
+		} catch (NumberFormatException e) {
+			System.out.println("Valor inválido. Por favor, insira um número inteiro.");
 		}
 	}
+
 }
+
+
+

@@ -4,18 +4,15 @@ import java.util.*;
 
 public class Cliente extends Pessoa {
 	private String mesa;
+	private UUID id;
 	private List<Pedido> pedidos;
 	private List<Cliente> clientes;
 	private Set<UUID> historicoRestaurantes = new HashSet<>();
 
-	public Cliente() {
-		super();
-		this.pedidos = new ArrayList<>();
-	}
-
 	public Cliente(String nome, String login, String senha, int telefone, String mesa) {
 		super(nome, login, senha, telefone);
 		this.mesa = null;
+		this.id = UUID.randomUUID();
 		this.pedidos = new ArrayList<>();
 	}
 
@@ -55,9 +52,6 @@ public class Cliente extends Pessoa {
 		return novoCliente;
 	}
 
-
-	public void criarPedido(Pedido pp) { pedidos.add(pp); }
-
 	public void exibirPedidos() {
 		if (pedidos.isEmpty()) {
 			System.out.println("Nenhum pedido registrado para o cliente selecionado.");
@@ -71,6 +65,48 @@ public class Cliente extends Pessoa {
 					"\nTotal: R$ " + String.format("%.2f", pp.getTotal()));
 		}
 	}
+
+	public void top3Restaurantes(Map<UUID, Restaurante> restaurantes) {
+		Map<UUID, Integer> podium = new HashMap<>();
+
+		for (Pedido pedido : pedidos) {
+			if (pedido.getRestaurante() != null) {
+				UUID idRest = pedido.getRestaurante().getIdRestaurant();
+
+				// Se já tiver no mapa, soma +1. Se não tiver, começa com 1.
+				if (podium.containsKey(idRest)) {
+					int atual = podium.get(idRest);
+					podium.put(idRest, atual + 1);
+				} else {
+					podium.put(idRest, 1);
+				}
+			}
+		}
+
+		if (podium.isEmpty()) {
+			System.out.println("O cliente ainda não fez pedidos.");
+			return;
+		}
+
+		List<Map.Entry<UUID, Integer>> listaOrdenada = new ArrayList<>(podium.entrySet());
+
+		listaOrdenada.sort((a, b) -> b.getValue() - a.getValue());
+
+		System.out.println("TOP 3 Restaurantes mais frequentados:");
+
+		for (int i = 0; i < Math.min(3, listaOrdenada.size()); i++) {
+			UUID id = listaOrdenada.get(i).getKey();
+			int vezes = listaOrdenada.get(i).getValue();
+
+			Restaurante r = restaurantes.get(id);
+			if (r != null) {
+				System.out.println((i + 1) + "º - " + r.getNome() + " (" + vezes + " pedidos)");
+			} else {
+				System.out.println((i + 1) + "º - Restaurante não encontrado (ID: " + id + ")");
+			}
+		}
+	}
+
 
 	public static void vincularMesaViaQRCode(Cliente cliente, String mesaQR) {
 		if (cliente == null) {

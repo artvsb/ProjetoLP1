@@ -3,22 +3,24 @@ import java.util.UUID;
 // ID único
 
 public abstract class Pessoa {
-	private UUID id;
+	protected UUID id;
     protected String nome;
     protected String login;
     protected String senha;
     protected int telefone;
+	protected String cpf;
 
 	public UUID getId() { return id; }
 
 	public Pessoa() { this.id = UUID.randomUUID(); }
 
-    public Pessoa(String nome, String login, String senha, int telefone) {
+    public Pessoa(String nome, String login, String senha, int telefone, String cpf) {
         this.id = UUID.randomUUID();
 		this.nome = nome;
         this.login = login;
         this.senha = senha;
         this.telefone = telefone;
+		this.cpf = cpf;
     }
 
     public String getNome() {
