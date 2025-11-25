@@ -11,9 +11,7 @@ public abstract class Pessoa {
 	protected String cpf;
 
 	public UUID getId() { return id; }
-
-	public Pessoa() { this.id = UUID.randomUUID(); }
-
+	
     public Pessoa(String nome, String login, String senha, int telefone, String cpf) {
         this.id = UUID.randomUUID();
 		this.nome = nome;
