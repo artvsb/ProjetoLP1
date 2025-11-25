@@ -46,7 +46,7 @@ public class RestauranteService {
 
 	public void marcarComoEntregue(Pedido pedido) {
 		pedido.marcarEntregue();
-		System.out.println("Pedido entregue às " + pedido.getDataHoraPronto());
+		System.out.println("Pedido entregue às " + pedido.getDataHoraProntoPrevisao());
 	}
 
 	private boolean podeRecusarPedido(NivelAcesso nivelAcesso) {

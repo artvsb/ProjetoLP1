@@ -1,41 +1,37 @@
 package model;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Menu {
-	private List<ItemPedido> itens;
-	private String nomePrato;
+	private List<ItemCardapio> menu = new ArrayList<>();
+	private String nome;
+	private HorarioMenu horario;
 
-	public List<ItemPedido> getItens() { return itens; }
-
-	public Menu() { this.itens = new ArrayList<>(); }
-
-	public void addItem(ItemPedido item) { itens.add(item); }
-
-	public void exibirMenu() {
-		System.out.println("================== MENU ==================");
-		if (itens.isEmpty()) {
-			System.out.println("Cardápio Vazio!");
-		} else {
-			for (int i = 0; i < itens.size(); i++) {
-				ItemPedido item = itens.get(i);
-				System.out.printf("%d - %s | R$ %.2f | %d min\n",
-						i + 1,
-						item.getNome(),
-						item.getPreco(),
-						item.getTempoPreparo(),
-						item.getDescricao()
-				);
-				System.out.println("Descrição: " + item.getDescricao());
-				System.out.println("---------------------------------------");
-			}
-		}
-
-		System.out.println("==========================================");
+	public Menu(String nome, HorarioMenu horario) {
+		this.nome = nome;
+		this.horario = horario;
 	}
 
-	public String getNomePrato() {	return nomePrato;	}
+	public String getNome() { return nome; }
+	public HorarioMenu getHorario() { return horario; }
+	public List<ItemCardapio> getMenu() { return menu; }
 
-	public void setNomePrato(String nomePrato) {	this.nomePrato = nomePrato;		}
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public void setHorario(HorarioMenu horario) {
+		this.horario = horario;
+	}
+
+	public void addItem(ItemCardapio item) {
+		menu.add(item);
+	}
+
+	public void exibirMenu() {
+		System.out.println("========== " + nome + " ==========");
+		for (ItemCardapio item : menu) {
+			System.out.println(item);
+		}
+	}
 }

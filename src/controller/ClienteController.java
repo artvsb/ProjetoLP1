@@ -14,15 +14,21 @@ public class ClienteController {
 		System.out.print("Nome: ");
 		String nome = tcl.nextLine();
 
-		System.out.print("Login: ");
-		String login = tcl.nextLine();
+		System.out.println("CPF: ");
+		String cpf = tcl.nextLine();
 
 		for (Cliente c : clientes) {
-			if (c.getLogin().equalsIgnoreCase(login)) {
-				System.out.println("Já existe um cliente com esse login!");
+			if (c.getCpf().equals(cpf)) {
+				System.out.println("CPF já cadastrado!");
 				return null;
 			}
 		}
+
+		System.out.println("E-mail: ");
+		String email = tcl.nextLine();
+
+		System.out.println("Login: ");
+		String login = tcl.nextLine();
 
 		System.out.print("Senha: ");
 		String senha = tcl.nextLine();
@@ -30,10 +36,11 @@ public class ClienteController {
 		System.out.print("Telefone: ");
 		int telefone = Integer.parseInt(tcl.nextLine());
 
-		Cliente novo = new Cliente(nome, login, senha, telefone, null);
+		Cliente novo = new Cliente(nome, login, senha, telefone, cpf, email);
 		clientes.add(novo);
 
 		System.out.println("Cliente cadastrado com sucesso!");
+		System.out.println("ID nr. " + );
 		return novo;
 	}
 }

@@ -5,7 +5,7 @@ import enums.StatusPedido;
 import enums.TipoAtendimento;
 import enums.*;
 
-import java.io.PrintWriter;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class Pedido {
 	private UUID id;
 	private Cliente cliente;
 	private Restaurante restaurante;
-	private LocalDateTime dataHoraPronto;
+	private LocalDateTime dataHoraProntoPrevisao;
 	private String mesa, justifRecusa;
 	private List<ItemPedido> itens;
 	private StatusPedido statusPedido = StatusPedido.EM_PREPARO;
@@ -27,6 +27,7 @@ public class Pedido {
 	private TiposPagamento tipoPagto;
 	private boolean pago;
 	private PrioridadeEntrega prioridadeEntrega = PrioridadeEntrega.NORMAL;
+	private LocalDateTime criadoEm;
 
 	public Pedido (String mesaOuCliente, TipoAtendimento tipoAtendimento) {
 		this.id = UUID.randomUUID();
@@ -34,6 +35,7 @@ public class Pedido {
 		this.itens = new ArrayList<>();
 		this.statusPedido = StatusPedido.EM_PREPARO;
 		this.justifRecusa = null;
+		this.criadoEm = LocalDateTime.now();
 	}
 	/* a terceira linha do mét0do define que o nr da mesa só será definido se o atendimento for local;
 	se for para viagem, a  mesa ficará com valor nulo (null). */
@@ -45,6 +47,8 @@ public class Pedido {
 	public UUID getId() {
 		return id;
 	}
+
+	public LocalDateTime getCriadoEm() { return criadoEm; }
 
 	public void setId(UUID id) {
 		this.id = id;
@@ -66,12 +70,12 @@ public class Pedido {
 		this.restaurante = restaurante;
 	}
 
-	public LocalDateTime getDataHoraPronto() {
-		return dataHoraPronto;
+	public LocalDateTime getDataHoraProntoPrevisao() {
+		return dataHoraProntoPrevisao;
 	}
 
-	public void setDataHoraPronto(LocalDateTime dataHoraPronto) {
-		this.dataHoraPronto = dataHoraPronto;
+	public void setDataHoraProntoPrevisao(LocalDateTime dataHoraProntoPrevisao) {
+		this.dataHoraProntoPrevisao = dataHoraProntoPrevisao;
 	}
 
 	public void setTipoPagto(TiposPagamento tipoPagto) {
@@ -147,7 +151,7 @@ public class Pedido {
 
 	public void marcarEntregue() {
 		this.statusPedido = StatusPedido.ENTREGUE;
-		this.dataHoraPronto = LocalDateTime.now();
+		this.dataHoraProntoPrevisao = LocalDateTime.now();
 	}
 
 	public void cancelarPedido() { this.statusPedido = StatusPedido.CANCELADO; }
@@ -188,6 +192,16 @@ public class Pedido {
 	public int getTempoPreparoEstim() { return itens.stream().mapToInt(ItemPedido::getTempoPreparo).max().orElse(0); }
 
 	public String getHrPrevistoPedido() { LocalTime agora = LocalTime.now(); int minutos = getTempoPreparoEstim(); LocalTime previsto = agora.plusMinutes(minutos); return previsto.format(DateTimeFormatter.ofPattern("HH:mm")); }
+
+	public long getTempoRestante() {
+		LocalDateTime agora = LocalDateTime.now();
+		int tempoEstimadoMin = getTempoPreparoEstim();
+		LocalDateTime previsao = this.getDataHoraProntoPrevisao() != null
+				? this.getDataHoraProntoPrevisao()
+				: this.getCriadoEm().plusMinutes(tempoEstimadoMin);
+
+		return Duration.between(agora, previsao).toMinutes();
+	}
 
 }
 

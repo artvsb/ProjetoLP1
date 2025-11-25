@@ -3,16 +3,21 @@ package service;
 import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Map;
 
 import enums.TipoAtendimento;
 import model.*;
 import enums.TiposPagamento;
 import enums.StatusPedido;
+import model.interfaces.GerarID;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
-public class PedidoService {
+public class PedidoService implements GerarID {
+	private HashSet<String> idsGerados = new HashSet<>();
+	private Random random = new Random();
 
 	public int getTempoPreparoEstim(Pedido pedido) {
 		return pedido.getItens().stream().mapToInt(ItemPedido::getTempoPreparo).max().orElse(0);
@@ -31,6 +36,32 @@ public class PedidoService {
 			total += item.getSubtotal();
 		}
 		return total;
+	}
+
+	// gerar id de letras e números "ABC-123456789"
+	@Override
+	public String gerarID() {
+		String id;
+		do {
+			StringBuilder sb = new StringBuilder();
+
+			// Gerar 3 letras aleatórias
+			for (int i = 0; i < 3; i++) {
+				char letra = (char) ('A' + random.nextInt(26));
+				sb.append(letra);
+			}
+
+			// Gerar 9 números aleatórios
+			for (int i = 0; i < 9; i++) {
+				int digito = random.nextInt(10);
+				sb.append(digito);
+			}
+
+			id = sb.toString();
+		} while (idsGerados.contains(id));
+
+		idsGerados.add(id);
+		return id;
 	}
 
 

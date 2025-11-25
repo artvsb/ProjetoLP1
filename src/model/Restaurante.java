@@ -1,6 +1,9 @@
 package model;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import enums.StatusPedido;
+import model.Pedido;
 
 public class Restaurante {
 	private UUID idRestaurant;
@@ -10,7 +13,7 @@ public class Restaurante {
 	private String endereco;
 	private Menu menu;
 	private double txEntregaPrioritaria;
-	private Map<String, String> mapaMesas; // chave: QR Code, valor: nr Mesa
+	private Map<String, String> mapaMesas = new HashMap<>(); // chave: QR Code, valor: nr Mesa
 
 	public Restaurante(String nome, String endereco) {
 		this.idRestaurant = UUID.randomUUID();
@@ -21,6 +24,9 @@ public class Restaurante {
 
 	public void registrarMesa(String codigoQR, String numeroMesa) {
 		mapaMesas.put(codigoQR, numeroMesa);
+		//teste
+		mapaMesas.put("ABC12345", "111");
+		mapaMesas.put("XZY09876", "999");
 	}
 
 	public Map<String, String> getMapaMesas() {	 return mapaMesas;	}

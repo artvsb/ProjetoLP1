@@ -1,19 +1,25 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Cliente extends Pessoa {
 	private String mesa;
 	private UUID id;
 	private List<Pedido> pedidos;
-	private List<Cliente> clientes;
 	private Set<UUID> historicoRestaurantes = new HashSet<>();
+	private LocalDateTime criadoEm;
 
-	public Cliente(String nome, String login, String senha, int telefone, String mesa) {
-		super(nome, login, senha, telefone);
+	public Cliente(String nome, String login, String senha, int telefone, String cpf, String email) {
+		super(nome, login, senha, telefone, cpf, email);
 		this.mesa = null;
 		this.id = UUID.randomUUID();
 		this.pedidos = new ArrayList<>();
+		this.criadoEm = LocalDateTime.now();
+	}
+
+	public LocalDateTime getCriadoEm() {
+		return criadoEm;
 	}
 
 	public String getMesa() { return mesa; }
@@ -22,7 +28,7 @@ public class Cliente extends Pessoa {
 
 	public List<Pedido> getPedidos() { return pedidos; }
 
-	
+	public void criarPedido(Pedido pedido) { pedidos. add(pedido); }
 
 	public void exibirPedidos() {
 		if (pedidos.isEmpty()) {
@@ -30,7 +36,7 @@ public class Cliente extends Pessoa {
 			return;
 		}
 
-		System.out.println("Pedidos do cliente " + nome + ":");
+		System.out.println("Pedidos de " + nome + ":");
 		for (Pedido pp : pedidos) {
 			System.out.println("Pedido nr. " + pp.getId() +
 					"\nStatus: " + pp.getStatusPedido() +
@@ -101,6 +107,8 @@ public class Cliente extends Pessoa {
 	public Set<UUID> getHistoricoRestaurantes() {
 		return historicoRestaurantes;
 	}
+
+	public long getTempoRestante()
 
 	@Override
 	public String toString() {

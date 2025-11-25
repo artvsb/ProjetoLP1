@@ -15,7 +15,7 @@ public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
     public CARGO cargo;
 	private boolean atv;
 	private Set<Poderes> poderes;
-	private Pedido pp;
+	private Pedido pedido;
 	private NivelAcesso nivelAcesso;
 
 	public Funcionario(String nome, String login, String senha, int telefone, CARGO cargo) {
@@ -86,7 +86,7 @@ public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
 	public void removerPoderes(Poderes p) { poderes.remove(p); }
 
 	public void aceitarPedido(Pedido pp) {
-		this.pp = pp;
+		this.pedido = pp;
 		if (checkPoderes(Poderes.ACEITAR_PEDIDO)) {
 			pp.setStatusPedido(StatusPedido.PRONTO);
 			System.out.println("Pedido aceito e está agora PRONTO.");
