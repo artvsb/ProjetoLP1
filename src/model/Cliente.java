@@ -22,35 +22,7 @@ public class Cliente extends Pessoa {
 
 	public List<Pedido> getPedidos() { return pedidos; }
 
-	public static Cliente novoCliente(Scanner tcl, List<Cliente> clientes) {
-		System.out.println("==============================================");
-		System.out.println("============ CADASTRO DE CLIENTE =============");
-
-		System.out.print("Nome: ");
-		String nome = tcl.nextLine();
-
-		System.out.print("Login: ");
-		String login = tcl.nextLine();
-
-		for (Cliente c : clientes) {
-			if (c.getLogin().equalsIgnoreCase(login)) {
-				System.out.println("Já existe um cliente com esse login!");
-				return null;
-			}
-		}
-
-		System.out.print("Senha: ");
-		String senha = tcl.nextLine();
-
-		System.out.print("Telefone: ");
-		String telefone = tcl.nextLine();
-
-		Cliente novoCliente = new Cliente(nome, login, senha, telefone, null); // mesa = null
-		clientes.add(novoCliente);
-
-		System.out.println("Cliente cadastrado com sucesso!");
-		return novoCliente;
-	}
+	
 
 	public void exibirPedidos() {
 		if (pedidos.isEmpty()) {
