@@ -1,37 +1,52 @@
 package model;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 public class Menu {
-	private List<ItemCardapio> menu = new ArrayList<>();
-	private String nome;
-	private HorarioMenu horario;
+	private LocalDateTime inicioHorarioMenu, fimHorarioMenu;
+	private String nomeMenu;
+	private List<ItemCardapio> itens;
 
-	public Menu(String nome, HorarioMenu horario) {
-		this.nome = nome;
-		this.horario = horario;
+	public Menu(String nomeMenu, LocalDateTime inicioHorarioMenu, LocalDateTime fimHorarioMenu) {
+		this.nomeMenu = nomeMenu;
+		this.inicioHorarioMenu = inicioHorarioMenu;
+		this.fimHorarioMenu = fimHorarioMenu;
+		this.itens = new ArrayList<>();
 	}
 
-	public String getNome() { return nome; }
-	public HorarioMenu getHorario() { return horario; }
-	public List<ItemCardapio> getMenu() { return menu; }
-
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void adicionarItemCardapio(String categoria, ItemCardapio itemCardapio) {
+		itens.add(itemCardapio);
 	}
 
-	public void setHorario(HorarioMenu horario) {
-		this.horario = horario;
+	public boolean isAtivoAgora() {
+		LocalTime agora = LocalTime.now();
+		return (agora.isAfter(inicioHorarioMenu) || agora.equals(inicioHorarioMenu)) &&
+				(agora.isBefore(fimHorarioMenu) || agora.equals(fimHorarioMenu));
 	}
 
-	public void addItem(ItemCardapio item) {
-		menu.add(item);
+	public LocalDateTime getInicioHorarioMenu() {
+		return inicioHorarioMenu;
 	}
 
-	public void exibirMenu() {
-		System.out.println("========== " + nome + " ==========");
-		for (ItemCardapio item : menu) {
-			System.out.println(item);
-		}
+	public void setInicioHorarioMenu(LocalDateTime inicioHorarioMenu) {
+		this.inicioHorarioMenu = inicioHorarioMenu;
+	}
+
+	public LocalDateTime getFimHorarioMenu() {
+		return fimHorarioMenu;
+	}
+
+	public void setFimHorarioMenu(LocalDateTime fimHorarioMenu) {
+		this.fimHorarioMenu = fimHorarioMenu;
+	}
+
+	public String getNomeMenu() {
+		return nomeMenu;
+	}
+
+	public void setNomeMenu(String nomeMenu) {
+		this.nomeMenu = nomeMenu;
 	}
 }

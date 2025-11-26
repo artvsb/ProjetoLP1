@@ -13,8 +13,6 @@ import java.util.UUID;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
-
 public class Pedido {
 	private UUID id;
 	private Cliente cliente;
@@ -28,6 +26,7 @@ public class Pedido {
 	private boolean pago;
 	private PrioridadeEntrega prioridadeEntrega = PrioridadeEntrega.NORMAL;
 	private LocalDateTime criadoEm;
+	private LocalDateTime previsaoEntrega;
 
 	public Pedido (String mesaOuCliente, TipoAtendimento tipoAtendimento) {
 		this.id = UUID.randomUUID();
@@ -64,6 +63,28 @@ public class Pedido {
 
 	public Restaurante getRestaurante() {
 		return restaurante;
+	}
+
+	public LocalDateTime getPrevisaoEntrega() {
+		return previsaoEntrega;
+	}
+
+	public String getResumoItens() {
+		if (itens == null || itens.isEmpty()) {
+			return "Nenhum item no pedido.";
+		}
+
+		StringBuilder resumo = new StringBuilder();
+		for (ItemPedido item : itens) {
+			resumo.append("- ")
+					.append(item.getQtd()).append("x ")
+					.append(item.getNome()).append("\n");
+		}
+		return resumo.toString();
+	}
+
+	public void setPrevisaoEntrega(LocalDateTime previsaoEntrega) {
+		this.previsaoEntrega = previsaoEntrega;
 	}
 
 	public void setRestaurante(Restaurante restaurante) {

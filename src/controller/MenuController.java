@@ -5,16 +5,19 @@ import model.Menu;
 import service.MenuService;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Scanner;
 
 public class MenuController {
 	private MenuService menuService = new MenuService();
 	private Scanner tcl = new Scanner(System.in);
+	private int tempoPreparo;
 
 	public MenuController(MenuService menuService) {
 		this.menuService = menuService;
 		this.tcl = new Scanner(System.in);
 	}
+
 
 	public void exibirOpcoesAdm() {
 		int opcao;
@@ -76,9 +79,10 @@ public class MenuController {
 	private void listarMenus() {
 		System.out.println("\n====== MENUS REGISTRADOS ======");
 		menuService.listarMenus().forEach(menu -> {
-			System.out.println("Menu: " + menu.getNome());
-			System.out.println("Horário: " + menu.getHorario());
+			System.out.println("Menu: " + menu.getNomeMenu());
+			System.out.println("Horário: " + menu.getInicioHorarioMenu() " até " + menu.getFimHorarioMenu());
 			System.out.println("Itens:");
+			for (ItemCardapio item : )
 			menu.getMenu().forEach(item -> {
 				System.out.printf("- %s | R$ %.2f | %d min\n", item.getNome(), item.getPreco(), item.getTempoPreparo());
 				System.out.println("  " + item.getDescricao());
@@ -99,13 +103,13 @@ public class MenuController {
 		tcl.nextLine();
 
 		System.out.println("Tempo de preparo (minutos): ");
-		int tempo = tcl.nextInt();
+		int tempoPreparo = tcl.nextInt();
 		tcl.nextLine();
 
 		System.out.println("Descrição: ");
 		String descricao = tcl.nextLine();
 
-		ItemCardapio item = new ItemCardapio(nome, preco, tempo, descricao);
+		ItemCardapio item = new ItemCardapio(nome, descricao, preco, tempoPreparo);
 		menuService.adicionarItemAoMenu(nomeMenu, item);
 	}
 
@@ -117,4 +121,6 @@ public class MenuController {
 			System.out.println("Nenhum menu ativo no momento.");
 		}
 	}
+
+
 }

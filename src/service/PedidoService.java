@@ -3,8 +3,7 @@ package service;
 import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import enums.TipoAtendimento;
 import model.*;
@@ -13,11 +12,16 @@ import enums.StatusPedido;
 import model.interfaces.GerarID;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 
 public class PedidoService implements GerarID {
 	private HashSet<String> idsGerados = new HashSet<>();
 	private Random random = new Random();
+	private List<Pedido> pedidosAtivos;
+	private Scanner tcl = new Scanner(System.in);
+	private Pedido pedidoAtivo;
+	private Pedido pedido;
+	private Restaurante restaurante;
+	private String conteudoQRCode;
 
 	public int getTempoPreparoEstim(Pedido pedido) {
 		return pedido.getItens().stream().mapToInt(ItemPedido::getTempoPreparo).max().orElse(0);
@@ -64,8 +68,6 @@ public class PedidoService implements GerarID {
 		return id;
 	}
 
-
-
 	public void notificarCozinha(Pedido pedido) {
 		System.out.println("\n NOTIFICAÇÃO PARA COZINHA ");
 		System.out.println("Pedido ID: " + pedido.getId());
@@ -74,6 +76,28 @@ public class PedidoService implements GerarID {
 		}
 		pedido.setStatusPedido(StatusPedido.EM_PREPARO);
 	}
+
+	public Pedido buscarPedidoAtv(Cliente cliente) {
+		for (Pedido pedido : pedidosAtivos) {
+			if (pedido.getCliente().equals(cliente) &&
+					!pedido.isEntregue() &&
+					pedido.getStatusPedido() != StatusPedido.CANCELADO) {
+				return pedido;
+			}
+		}
+		return null;
+	}
+
+	// MANIPULAR  PEDIDOS
+
+	public void ativarPedido(Pedido novo) {
+		pedidosAtivos.add(novo);
+	}
+
+	public void finalizarPedido(Pedido pedido) {	pedidosAtivos.remove(pedido);	}
+
+	public List<Pedido> getPedidosAtivos() {	return pedidosAtivos;	}
+	//
 
 	public void emitirRecibo(Pedido pedido) {
 		System.out.println("======= RECIBO =======");

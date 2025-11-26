@@ -3,7 +3,6 @@ package model;
 public class ItemPedido {
 	private ItemCardapio item;
 	private int qtd;
-	private String nome;
 
 	public ItemPedido(ItemCardapio item, int qtd) {
 		this.item = item;
@@ -13,12 +12,9 @@ public class ItemPedido {
 	public ItemCardapio getItem() { return item; }
 
 	public String getNome() {
-		return nome;
-	}
+		return item.getNome();
+	} // retorna o nome direto de ItemCardapio; não tem setter
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
 
 	public int getQtd() { return qtd; }
 

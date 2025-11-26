@@ -9,8 +9,9 @@ public class Cliente extends Pessoa {
 	private List<Pedido> pedidos;
 	private Set<UUID> historicoRestaurantes = new HashSet<>();
 	private LocalDateTime criadoEm;
+	private Restaurante restaurante;
 
-	public Cliente(String nome, String login, String senha, int telefone, String cpf, String email) {
+	public Cliente(String nome, String login, String senha, String telefone, String cpf, String email) {
 		super(nome, login, senha, telefone, cpf, email);
 		this.mesa = null;
 		this.id = UUID.randomUUID();
@@ -28,7 +29,7 @@ public class Cliente extends Pessoa {
 
 	public List<Pedido> getPedidos() { return pedidos; }
 
-	public void criarPedido(Pedido pedido) { pedidos. add(pedido); }
+	public void criarPedido(Pedido pedido) { pedidos.add(pedido); }
 
 	public void exibirPedidos() {
 		if (pedidos.isEmpty()) {
@@ -116,5 +117,13 @@ public class Cliente extends Pessoa {
 				"\nID: " + getId() +
 				"\nNome: " + nome +
 				"\nMesa nr. " + mesa;
+	}
+
+	public Restaurante setRestaurante(Restaurante restaurante) {
+		return restaurante;
+	}
+
+	public Restaurante getRestaurante() {
+		return restaurante;
 	}
 }

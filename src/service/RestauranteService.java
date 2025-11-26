@@ -1,58 +1,27 @@
 package service;
 
-import enums.NivelAcesso;
-import enums.StatusPedido;
-import model.ItemPedido;
-import model.Pedido;
-import model.Funcionario;
+import model.Restaurante;
+import model.interfaces.GerarID;
 
-public class RestauranteService {
+import java.util.*;
 
-	public void notifNovoPedido(Pedido pp) {
-		System.out.println("\n NOVO PEDIDO ");
-		System.out.println("Cliente: " + pp.getCliente().getNome());
-		System.out.println("Itens do pedido:");
-		for (ItemPedido item : pp.getItens()) {
-			System.out.println("- " + item.getQtd() + "x " + item.getNome());
-		}
-		System.out.println("Preparar em até: " + pp.getTempoPreparoEstim() + " minutos");
-		System.out.println("Horário previsto para conclusão: " + pp.getHrPrevistoPedido());
-		pp.setStatusPedido(StatusPedido.EM_PREPARO);
+public class RestauranteService implements GerarID {
+	private Set<String> idsGerados = new HashSet<>();
+	private Map<String, Restaurante> restaurantes = new HashMap<>();
+
+	@Override
+	public String gerarID(Restaurante restaurante) {
+		Random rd = new Random();
+		String id;
+		do {
+			int numero = 100000 + rd.nextInt(900000); // 6 dígitos
+			id = "RR" + numero;
+		} while (idsGerados.contains(id));
+		idsGerados.add(id);
+		restaurantes.put(id, restaurante);
+		return id;
 	}
 
-
-	public void aceitarPedido(Pedido pedido) {
-		pedido.setStatusPedido(StatusPedido.EM_PREPARO);
-		System.out.println("Pedido aceito e em preparo.");
-	}
-
-	public void recusarPedido(Pedido pedido, Funcionario funcionario, String justificativa) {
-		NivelAcesso nivel = funcionario.getNivelAcesso();
-
-		if (podeRecusarPedido(funcionario.getNivelAcesso())) {
-			pedido.setStatusPedido(StatusPedido.CANCELADO);
-			pedido.setJustifRecusa(justificativa);
-			System.out.println("Que Pena! Seu pedido foi recusado");
-			System.out.println("Motivo: " + justificativa);
-		} else {
-			System.out.println("Acesso negado! Opção reservada à Administração.");
-		}
-	}
-
-	public void marcarComoPronto(Pedido pedido) {
-		pedido.marcarPronto();
-		System.out.println("Pedido pronto para entrega.");
-	}
-
-	public void marcarComoEntregue(Pedido pedido) {
-		pedido.marcarEntregue();
-		System.out.println("Pedido entregue às " + pedido.getDataHoraProntoPrevisao());
-	}
-
-	private boolean podeRecusarPedido(NivelAcesso nivelAcesso) {
-		return nivelAcesso == NivelAcesso.GERENCIA || nivelAcesso == NivelAcesso.PROPRIETARIO;
-	}
-	// só é usado dentro da própria classe
 
 }
 

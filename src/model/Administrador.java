@@ -7,14 +7,16 @@ import model.interfaces.CustomMenu;
 import model.interfaces.Gerenciavel;
 import model.interfaces.VisualizarPerfil;
 
+import java.util.Map;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, VisualizarPerfil {
 	private NivelAcesso nivelAcesso;
 	private boolean atv;
 	private Restaurante rr;
 
-	public Administrador(String nome, String login, String senha, int telefone, NivelAcesso nivelAcesso, Restaurante rr) {
+	public Administrador(String nome, String login, String senha, String telefone, NivelAcesso nivelAcesso, Restaurante rr) {
 			super(nome, login, senha, telefone);
 			this.nivelAcesso = nivelAcesso;
 			this.atv = true;
@@ -79,7 +81,7 @@ public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, Vi
 			int tempoPreparo = tcl.nextInt();
 
 			menu.addItem(new ItemCardapio(nome, preco, tempoPreparo, descricao));
-			System.out.println("Prato adicionado com sucesso!");
+			System.out.println("ItemCardapio adicionado com sucesso!");
 		}
 	}
 
@@ -102,6 +104,11 @@ public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, Vi
 			ItemCardapio deletado = menu.getMenu().remove(indice - 1);
 			System.out.println("Item removido: " + deletado.getNome());
 		}
+	}
+
+	@Override
+	public void editItemMenu(Menu menu, Scanner tcl) {
+
 	}
 
 	@Override
@@ -175,6 +182,10 @@ public class Administrador extends Pessoa implements Gerenciavel, CustomMenu, Vi
 		}
 	}
 
+	@Override
+	public void visualizarPerfil(Cliente cc, Map<UUID, Restaurante> restaurantes) {
+
+	}
 }
 
 

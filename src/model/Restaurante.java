@@ -3,109 +3,86 @@ package model;
 import java.util.*;
 import java.util.stream.Collectors;
 import enums.StatusPedido;
-import model.Pedido;
+import model.interfaces.GerarID;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Restaurante {
-	private UUID idRestaurant;
-	private List<String> mesasDisponiveis = new ArrayList<>();
-	private List<Pedido> pedidosAtivos = new ArrayList<>();
-	private String nome;
-	private String endereco;
-	private Menu menu;
-	private double txEntregaPrioritaria;
-	private Map<String, String> mapaMesas = new HashMap<>(); // chave: QR Code, valor: nr Mesa
+	private Map<String, String> mapaMesas = new HashMap<>();
+	private List<Pedido> pedidos = new ArrayList<>();
+	private String id, nome, cnpj, telefone, email, endereco;
+	private Administrador administrador;
+	private List<Funcionario> funcionarios;
+	private Map<String, Restaurante> restaurantes = new HashMap<>();
 
-	public Restaurante(String nome, String endereco) {
-		this.idRestaurant = UUID.randomUUID();
+	public Map<String, String> getMapaMesas() { return mapaMesas; }
+
+	public Restaurante(String nome, String cnpj, String telefone, String email, String endereco) {
 		this.nome = nome;
+		this.cnpj = cnpj;
+		this.telefone = telefone;
+		this.email = email;
 		this.endereco = endereco;
-		this.mapaMesas = new HashMap<>();
 	}
 
-	public void registrarMesa(String codigoQR, String numeroMesa) {
-		mapaMesas.put(codigoQR, numeroMesa);
-		//teste
-		mapaMesas.put("ABC12345", "111");
-		mapaMesas.put("XZY09876", "999");
+	public void adicionarMesa(String qrCode, String numeroMesa) {
+		mapaMesas.put(qrCode, numeroMesa);
 	}
 
-	public Map<String, String> getMapaMesas() {	 return mapaMesas;	}
-
-	public double getTxEntregaPrioritaria() {
-		return txEntregaPrioritaria;
-	}
-
-	public void setTxEntregaPrioritaria(int percentual) {
-		if (percentual < 0) {
-			System.out.println("A taxa não pode ser negativa!");
-			return;
+	public void adicionarPedido(Pedido pedido) {
+		if (pedido != null) {
+			pedidos.add(pedido);
 		}
-
-		this.txEntregaPrioritaria = 1 + (percentual / 100.0);
-		this.txEntregaPrioritaria = txEntregaPrioritaria;
-
-		System.out.println("Nova taxa de entrega prioritária : " + percentual + "%");
-	}
-
-	public void notificarAdministracao(Cliente cliente) {
-		System.out.println("[ADMIN] Novo cliente conectado: " + cliente.getNome() + " | Mesa: " + cliente.getMesa());
-	}
-
-	public void notificarCozinha(Cliente cliente) {
-		System.out.println("[COZINHA] Cliente " + cliente.getNome() + " ocupou a mesa " + cliente.getMesa());
-	}
-
-
-	public void addMesa(String mesa) {
-		if (!mesasDisponiveis.contains(mesa)) { mesasDisponiveis.add(mesa); }
-	}
-
-	public void addPedido(Pedido pedido) {
-		if (pedido != null) {	pedidosAtivos.add(pedido);	}
-	}
-
-	public List<String> getMesasDisponiveis() {
-		return mesasDisponiveis;
-	}
-
-	public void setMesasDisponiveis(List<String> mesasDisponiveis) {
-		this.mesasDisponiveis = mesasDisponiveis;
 	}
 
 	public List<Pedido> getPedidosAtivos() {
-		return pedidosAtivos;
+		return pedidos.stream()
+				.filter(p -> p.getStatusPedido() == StatusPedido.EM_PREPARO || p.getStatusPedido() == StatusPedido.PRONTO)
+				.collect(Collectors.toList());
 	}
 
-	public void setPedidosAtivos(List<Pedido> pedidosAtivos) {
-		this.pedidosAtivos = pedidosAtivos;
+	public List<Pedido> getTodosPedidos() {
+		return pedidos;
 	}
 
-	public UUID getIdRestaurant() {
-		return idRestaurant;
+	public Map<String, Restaurante> getRestaurantes() {
+		return restaurantes;
 	}
 
-	public void setIdRestaurant(UUID idRestaurant) {
-		this.idRestaurant = idRestaurant;
+	public List<Funcionario> getFuncionarios() {
+		return funcionarios;
 	}
 
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
+	public Administrador getAdministrador() {
+		return administrador;
 	}
 
 	public String getEndereco() {
 		return endereco;
 	}
 
-	public void setEndereco(String endereco) {
-		this.endereco = endereco;
+	public String getEmail() {
+		return email;
 	}
 
-	@Override
-	public String toString() {
-		return nome + " (" + idRestaurant + ")";
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public String getCnpj() {
+		return cnpj;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public List<Pedido> getPedidos() {
+		return pedidos;
 	}
 }

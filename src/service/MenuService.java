@@ -11,7 +11,7 @@ import java.util.List;
 public class MenuService {
 	private List<Menu> menus = new ArrayList<>();
 
-	public void criarMenu(String nome, LocalTime inicio, LocalTime fim) {
+	public void criarMenu(String nomeMenu, LocalTime inicio, LocalTime fim) {
 
 		if (horariosSobrepostos(inicio, fim)) {
 			System.out.println("Já existe um menu ativo nesse horário!");
@@ -19,17 +19,17 @@ public class MenuService {
 		}
 
 		HorarioMenu horario = new HorarioMenu(inicio, fim);
-		Menu menu = new Menu(nome, horario);
+		Menu menu = new Menu(nomeMenu, inicio, fim);
 		menus.add(menu);
-		System.out.println("Menu criado: " + nome + " (" + horario + ")");
+		System.out.println("Menu criado: " + nomeMenu + " (" + horario + ")");
 	}
 
 	public void editarMenu(String nomeMenu, String novoNome, LocalTime novaHoraInicio, LocalTime novaHoraFim) {
 		for (Menu menu : menus) {
-			if (menu.getNome().equalsIgnoreCase(nomeMenu)) {
+			if (menu.getNomeMenu().equalsIgnoreCase(nomeMenu)) {
 
 				if (!novoNome.isEmpty()) {
-					menu.setNome(novoNome);
+					menu.setNomeMenu(novoNome);
 				}
 
 				if (novaHoraInicio != null && novaHoraFim != null) {
@@ -37,8 +37,8 @@ public class MenuService {
 						System.out.println("Erro: Novo horário se sobrepõe a outro menu.");
 						return;
 					}
-					menu.getHorario().setHoraInicio(novaHoraInicio);
-					menu.getHorario().setHoraFim(novaHoraFim);
+					menu.setInicioHorarioMenu(novaHoraInicio);
+					menu.setFimHorarioMenu(novaHoraFim);
 				}
 
 				System.out.println("Menu atualizado com sucesso.");
@@ -51,7 +51,7 @@ public class MenuService {
 
 	public void adicionarItemAoMenu(String nomeMenu, ItemCardapio item) {
 		for (Menu menu : menus) {
-			if (menu.getNome().equalsIgnoreCase(nomeMenu)) {
+			if (menu.getNomeMenu().equalsIgnoreCase(nomeMenu)) {
 				menu.addItem(item);
 				System.out.println("Item adicionado ao menu " + nomeMenu);
 				return;
