@@ -18,20 +18,40 @@ public class FuncionarioService {
 
 	public void cadastrar(Funcionario f) {
         funcionarios.add(f);
-        System.out.println("Funcionário cadastrado: " + f.getNome());
+        System.out.println("Id: " + f.getId());
+        System.out.println("Nome: " + f.getNome());
+        System.out.println("CPF: " + f.getCpf());
+        System.out.println("Telefone: " + f.getTelefone());
+        System.out.println("E-mail: " + f.getEmail());
+        System.out.println("Login: " + f.getLogin());
+        System.out.println("Senha: " + f.getSenha());
     }
 
     public void listar() {
         for (Funcionario f : funcionarios) {
+            System.out.println("Id: " + f.getId());
             System.out.println("Nome: " + f.getNome());
+            System.out.println("CPF: " + f.getCpf());
+            System.out.println("Telefone: " + f.getTelefone());
+            System.out.println("E-mail: " + f.getEmail());
         }
     }
 
-    public void atualizar(String nomepesq, String novoNome) {
+    public void atualizar(String nomePesq, String novoNome, String telPesq, String novoTel, String emailPesq, String novoEmail) {
         for (Funcionario f : funcionarios) {
-            if (f.getNome().equalsIgnoreCase(nomepesq)) {
+            if (f.getNome().equalsIgnoreCase(nomePesq)) {
                 f.setNome(novoNome);
                 System.out.println("Nome atualizado: " + novoNome);
+                return;
+            }
+            if (f.getTelefone().equalsIgnoreCase(telPesq)) {
+                f.setTelefone(novoTel);
+                System.out.println("Telefone atualizado: " + novoTel);
+                return;
+            }
+            if (f.getEmail().equalsIgnoreCase(emailPesq)) {
+                f.setEmail(novoEmail);
+                System.out.println("E-mail atualizado: " + novoEmail);
                 return;
             }
         }
