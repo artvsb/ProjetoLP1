@@ -29,4 +29,9 @@ public class ItemPedido {
 		return String.format("%d x %s = R$ %.2f\nDescrição: %s",
 				qtd, item.getNome(), getSubtotal(), item.getDescricao());
 	}
+
+	public double getPreco() {
+		return item.getPreco(); // pega o preço do ItemCardapio
+	}
+
 }

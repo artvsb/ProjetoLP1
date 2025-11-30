@@ -1,7 +1,7 @@
 package enums;
 
 public enum CARGO {
-	PROPRIETARIO,
-	GERENCIA,
+	DONO,
+	GERENTE,
 	COZINHA
 }

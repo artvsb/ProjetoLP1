@@ -1,44 +1,60 @@
 package model;
 import enums.CARGO;
 import enums.NivelAcesso;
-import enums.Poderes;
-import enums.StatusPedido;
-import model.interfaces.CustomMenu;
-import model.interfaces.Gerenciavel;
 
 import java.util.HashSet;
-import java.util.Scanner;
+import java.util.Random;
 import java.util.Set;
 
-public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
-    private String especialidade;
-    public CARGO cargo;
-	private boolean atv;
-	private Set<Poderes> poderes;
-	private Pedido pedido;
+public abstract class Funcionario extends Pessoa {
+    protected String id;
+	private boolean recebeBonus;
+	private double totalBonus;
+    protected CARGO cargo;
+	private boolean ativo;
 	private NivelAcesso nivelAcesso;
+	private boolean acessoCozinha;
+	private Set<String> idsGerados = new HashSet<>();
+	private Random random;
 
-	public Funcionario(String nome, String login, String senha, int telefone, CARGO cargo) {
-		super(nome, login, senha, telefone);
+
+
+	public Funcionario(String nome, String login, String senha, String telefone, String cpf, String email) {
+		super(nome, login, senha, telefone, cpf, email);
 		this.cargo = cargo;
-		this.atv = true;
-		this.poderes = new HashSet<>();
+		this.ativo = true;
     }
 
-	// talvez apagar depois
-    public Funcionario(String nome, String login, String senha, int telefone, String especialidade){
+	/* talvez apagar depois
+    public Funcionario(String nome, String login, String senha, String telefone, String CARGO){
         super(nome, login, senha, telefone);
-        this.especialidade = especialidade;
+        this.CARGO = CARGO;
 		this.poderes = new HashSet<>();
-    }
+    } */
 
-    public String getEspecialidade() {
-        return especialidade;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-	public void setEspecialidade(String especialidade) {
-        this.especialidade = especialidade;
-    }
+	@Override
+	public String gerarId(Funcionario funcionario) {
+		String id;
+		do {
+			StringBuilder sb = new StringBuilder("F");
+			for (int i = 0; i < 7; i++) {
+				sb.append(random.nextInt(10)); // gera de 0 a 9
+			}
+			id = sb.toString();
+		} while (idsGerados.contains(id)); // evita duplicados
+
+		idsGerados.add(id);
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
     public CARGO getCargo() {
         return cargo;
@@ -59,58 +75,53 @@ public class Funcionario extends Pessoa implements Gerenciavel, CustomMenu {
     @Override
     public String toString() {
         return "Funcionario{" +
-                "especialidade='" + especialidade + '\'' +
-                ", cargo=" + cargo +
+                "CARGO='" + cargo +
                 '}';
     }
 
-	@Override
-	public void ativar() {
-		this.atv = true;
+	public boolean isRecebeBonus() {
+		return recebeBonus;
 	}
 
-	@Override
-	public void desativar() {
-		this.atv = false;
+	public void setRecebeBonus(boolean recebeBonus) {
+		this.recebeBonus = recebeBonus;
 	}
 
-	@Override
-	public boolean isAtv() {
-		return atv;
+	public double getTotalBonus() {
+		return totalBonus;
 	}
 
-	public boolean checkPoderes(Poderes p) { return poderes.contains(p); }
+	public void adicionarBonus(double valor) {
+		this.totalBonus += valor;
+	}
 
-	public void concederPoderes(Poderes p) { poderes.add(p); }
+	public double consultarBonus() {
+		return totalBonus;
+	}
 
-	public void removerPoderes(Poderes p) { poderes.remove(p); }
+	public void entregarPedido(Pedido pedido) {
+		if (pedido != null && !pedido.isEntregue()) {
+			pedido.setEntregue();
 
-	public void aceitarPedido(Pedido pp) {
-		this.pedido = pp;
-		if (checkPoderes(Poderes.ACEITAR_PEDIDO)) {
-			pp.setStatusPedido(StatusPedido.PRONTO);
-			System.out.println("Pedido aceito e está agora PRONTO.");
-		} else {
-			System.out.println("Permissão negada para aceitar pedidos.");
+			if (recebeBonus) {
+				double bonus = pedido.getTotal() * 0.05; // 5% do valor do pedido
+				adicionarBonus(bonus);
+			}
 		}
 	}
 
-	public void recusarPedido(Pedido pedido, String justificativa) {
-		if (checkPoderes(Poderes.REJEITAR_PEDIDO)) {
-			pedido.setStatusPedido(StatusPedido.CANCELADO);
-			System.out.println("Pedido foi recusado. Justificativa: " + justificativa);
-		} else {
-			System.out.println("Permissão negada para recusar pedidos.");
-		}
+	// Ativar
+	public void ativarAcessoCozinha() {
+		this.acessoCozinha = true;
 	}
 
-	@Override
-	public void addItemMenu(Menu menu, Scanner tcl) {
-
+	// Desativar
+	public void desativarAcessoCozinha() {
+		this.acessoCozinha = false;
 	}
 
-	@Override
-	public void delItemMenu(Menu menu, Scanner tcl) {
-
+	public boolean temAcessoCozinha() {
+		return acessoCozinha;
 	}
+
 }

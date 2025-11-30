@@ -11,7 +11,7 @@ public class SistemaService {
 
 	public void registrarQRCode(String qrCode, Restaurante restaurante, String numeroMesa) {
 		mapaQRCodeGeral.put(qrCode, new Mesa(restaurante, numeroMesa));
-	}
+	} // -> deve ser usada em registrarMesa()
 
 	public Mesa buscarQRCode(String qrCode) {
 		return mapaQRCodeGeral.get(qrCode);

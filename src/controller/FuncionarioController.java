@@ -19,4 +19,9 @@ public class FuncionarioController {
     public void deletarFuncionario(String nome) {
         funcionarioService.deletarFuncionario(nome);
     }
+
+	public double consultarBonus(Funcionario funcionario) {
+		return funcionarioService.consultarBonus(funcionario);
+	}
+
 }

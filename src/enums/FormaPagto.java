@@ -1,6 +1,6 @@
 package enums;
 
-public enum TiposPagamento {
+public enum FormaPagto {
 	CARTAO_DEBITO,
 	CARTAO_CREDITO,
 	PIX

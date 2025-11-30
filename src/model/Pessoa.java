@@ -4,18 +4,18 @@ package model;
 public abstract class Pessoa {
 	protected String id;
     protected String nome;
-    protected String login;
     protected String senha;
     protected String telefone;
 	protected String cpf;
 	protected String email;
+	protected String login;
 
 	public String getId() { return id; }
 
     public Pessoa(String nome, String login, String senha, String telefone, String cpf, String email) {
         this.id = id;
 		this.nome = nome;
-        this.login = login;
+		this.login = login;
         this.senha = senha;
         this.telefone = telefone;
 		this.cpf = cpf;
@@ -43,16 +43,8 @@ public abstract class Pessoa {
 	}
 
 	public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
+		this.nome = nome;
+	}
 
     public String getSenha() {
         return senha;
@@ -70,11 +62,14 @@ public abstract class Pessoa {
         this.telefone = telefone;
     }
 
-    @Override
+	public abstract String gerarId();
+
+	public abstract String gerarId(Funcionario funcionario);
+
+	@Override
     public String toString() {
         return "Pessoa{" +
                 "nome='" + nome + '\'' +
-                ", login='" + login + '\'' +
                 ", senha='" + senha + '\'' +
                 ", telefone=" + telefone +
                 '}';

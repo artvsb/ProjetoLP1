@@ -2,13 +2,20 @@ package service;
 
 import model.Funcionario;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class FuncionarioService {
-    private ArrayList<Funcionario> funcionarios = new ArrayList<>();
+public class FuncionarioService implements Cadastro<Funcionario> {
+    private ArrayList<Funcionario> funcionarios;
+	private Random random;
+	private Set<String> idsGerados;
 
-    public void cadastrar(Funcionario f) {
+	public FuncionarioService() {
+		this.idsGerados = new HashSet<>();
+		this.random = new Random();
+		this.funcionarios = new ArrayList<>();
+	}
+
+	public void cadastrar(Funcionario f) {
         funcionarios.add(f);
         System.out.println("Funcionário cadastrado: " + f.getNome());
     }
@@ -52,4 +59,32 @@ public class FuncionarioService {
 
     public void cadastrarFuncionario() {
     }
+
+	@Override
+	public void salvar(Funcionario funcionario) {
+		String id = gerarId();
+		funcionario.setId(id);
+		funcionarios.add(funcionario);
+		System.out.println("Funcionário cadastrado com ID: " + id);
+	}
+
+	public List<Funcionario> getFuncionarios() {
+		return funcionarios;
+	}
+
+	public Funcionario buscarPorId(String id) {
+		return funcionarios.stream()
+				.filter(f -> f.getId().equals(id))
+				.findFirst()
+				.orElse(null);
+	}
+
+	public double consultarBonus(Funcionario funcionario) {
+		if (funcionario != null) {
+			return funcionario.consultarBonus();
+		}
+		return 0.0;
+	}
+
+
 }

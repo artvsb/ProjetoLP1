@@ -3,13 +3,14 @@ package model;
 import enums.StatusMesa;
 
 public class Mesa {
-	private final String nrMesa;
+	private String nrMesa;
 	private StatusMesa status;
 	private Restaurante restaurante;
 
 	public Mesa(Restaurante restaurante, String nrMesa) {
 		this.nrMesa = nrMesa;
 		this.status = StatusMesa.LIVRE;
+		this.restaurante = restaurante;
 	}
 
 	public String getNrMesa() {
@@ -20,5 +21,11 @@ public class Mesa {
 		return restaurante;
 	}
 
+	public StatusMesa getStatus() {
+		return status;
+	}
 
+	public void setStatus(StatusMesa status) {
+		this.status = status;
+	}
 }

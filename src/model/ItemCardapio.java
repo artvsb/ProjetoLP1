@@ -13,6 +13,11 @@ public class ItemCardapio {
 		this.tempoPreparo = tempoPreparo;
 	}
 
+	public ItemPedido toItemPedido(int qtd) {
+		return new ItemPedido(this, qtd);
+	}
+
+
 	public String getNome() {
 		return nome;
 	}
@@ -35,5 +40,13 @@ public class ItemCardapio {
 
 	public void setPreco(double preco) {
 		this.preco = preco;
+	}
+
+	public int getTempoPreparo() {
+		return tempoPreparo;
+	}
+
+	public void setTempoPreparo(int tempoPreparo) {
+		this.tempoPreparo = tempoPreparo;
 	}
 }

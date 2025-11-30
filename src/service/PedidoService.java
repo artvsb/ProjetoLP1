@@ -1,184 +1,51 @@
 package service;
 
-import java.io.PrintWriter;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
+import enums.FormaPagto;
 import enums.TipoAtendimento;
 import model.*;
-import enums.TiposPagamento;
-import enums.StatusPedido;
-import model.interfaces.GerarID;
 
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
-public class PedidoService implements GerarID {
-	private HashSet<String> idsGerados = new HashSet<>();
-	private Random random = new Random();
-	private List<Pedido> pedidosAtivos;
-	private Scanner tcl = new Scanner(System.in);
-	private Pedido pedidoAtivo;
-	private Pedido pedido;
-	private Restaurante restaurante;
-	private String conteudoQRCode;
+public class PedidoService {
 
-	public int getTempoPreparoEstim(Pedido pedido) {
-		return pedido.getItens().stream().mapToInt(ItemPedido::getTempoPreparo).max().orElse(0);
+	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, String mesaOuNome, TipoAtendimento tipo) {
+
 	}
 
-	public String getHrPrevistoPedido(Pedido pedido) {
-		LocalTime agora = LocalTime.now();
-		int minutos = getTempoPreparoEstim(pedido);
-		LocalTime previsto = agora.plusMinutes(minutos);
-		return previsto.format(DateTimeFormatter.ofPattern("HH:mm"));
+	public boolean editarPedido(Pedido pedido, List<ItemPedido> novosItens) {
+
 	}
 
-	public double getTotal(Pedido pedido) {
-		double total = 0;
-		for (ItemPedido item : pedido.getItens()) {
-			total += item.getSubtotal();
+	public boolean fecharPedido(Pedido pedido) {
+		if (pedido != null && !pedido.getItens().isEmpty()) {
+			pedido.setStatusPedido(enums.StatusPedido.EM_PREPARO);
+			return true;
 		}
-		return total;
+		return false;
 	}
 
-	// gerar id de letras e números "ABC-123456789"
-	@Override
-	public String gerarID() {
-		String id;
-		do {
-			StringBuilder sb = new StringBuilder();
-
-			// Gerar 3 letras aleatórias
-			for (int i = 0; i < 3; i++) {
-				char letra = (char) ('A' + random.nextInt(26));
-				sb.append(letra);
-			}
-
-			// Gerar 9 números aleatórios
-			for (int i = 0; i < 9; i++) {
-				int digito = random.nextInt(10);
-				sb.append(digito);
-			}
-
-			id = sb.toString();
-		} while (idsGerados.contains(id));
-
-		idsGerados.add(id);
-		return id;
-	}
-
-	public void notificarCozinha(Pedido pedido) {
-		System.out.println("\n NOTIFICAÇÃO PARA COZINHA ");
-		System.out.println("Pedido ID: " + pedido.getId());
-		for (ItemPedido item : pedido.getItens()) {
-			System.out.println("- " + item.getQtd() + "x " + item.getNome());
+	public boolean pagarPedido(Pedido pedido, FormaPagto formaPagto) {
+		if (pedido != null && !pedido.isPago()) {
+			pedido.setFormaPagto(formaPagto);
+			pedido.setPago(true);
+			return true;
 		}
-		pedido.setStatusPedido(StatusPedido.EM_PREPARO);
+		return false;
 	}
 
-	public Pedido buscarPedidoAtv(Cliente cliente) {
-		for (Pedido pedido : pedidosAtivos) {
-			if (pedido.getCliente().equals(cliente) &&
-					!pedido.isEntregue() &&
-					pedido.getStatusPedido() != StatusPedido.CANCELADO) {
+	public boolean cadastrarCartao(Cliente cliente, String numero, String validade, String nomeTitular) {
+		// Aqui poderia salvar os dados em um sistema real
+		System.out.println("Cartão cadastrado para cliente " + cliente.getNome());
+		return true;
+	}
+
+	public Pedido buscarPedidoPorId(List<Pedido> pedidos, String id) {
+		for (Pedido pedido : pedidos) {
+			if (pedido.getId().toString().equals(id)) {
 				return pedido;
 			}
 		}
 		return null;
-	}
-
-	// MANIPULAR  PEDIDOS
-
-	public void ativarPedido(Pedido novo) {
-		pedidosAtivos.add(novo);
-	}
-
-	public void finalizarPedido(Pedido pedido) {	pedidosAtivos.remove(pedido);	}
-
-	public List<Pedido> getPedidosAtivos() {	return pedidosAtivos;	}
-	//
-
-	public void emitirRecibo(Pedido pedido) {
-		System.out.println("======= RECIBO =======");
-		System.out.println("Pedido ID: " + pedido.getId());
-		System.out.println("Total: R$ " + pedido.getTotal());
-		System.out.println("Pagamento: " + pedido.getTipoPagto());
-		System.out.println("Data: " + LocalDateTime.now());
-		System.out.println("======================");
-	}
-
-	public void reciboTxt(Pedido pedido) {
-		String nomeArq = "recibo_mesa_" + pedido.getMesa() + "id_" + pedido.getId() + ".txt";
-		try (PrintWriter writer = new PrintWriter(nomeArq)) {
-			writer.println("=============================================");
-			writer.println("					RECIBO				  	");
-			writer.println("=============================================");
-			writer.println("ID: " + pedido.getId());
-			writer.println("Mesa: " + pedido.getMesa());
-			writer.println("Data/Hora: " +
-					LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
-			writer.println("------------------------------------");
-
-			for (ItemPedido item : pedido.getItens()) {
-				writer.printf("%dx %-20s     R$ %.2f (%d min)",
-						item.getQtd(), item.getNome(), item.getSubtotal(), item.getTempoPreparo());
-			}
-
-			writer.println("------------------------------------");
-			writer.printf("TOTAL:                    R$ %.2f\n", pedido.calcularTotal());
-			System.out.println("Tempo estimado de preparo: " + pedido.getTempoPreparoEstim() + " minutos");
-			System.out.println("Previsão de entrega: " + pedido.getHrPrevistoPedido());
-			writer.println("Status: " + pedido.getStatusPedido());
-			writer.println("====================================");
-
-			System.out.println("Recibo salvo em: " + nomeArq);
-		} catch (Exception e) {
-			System.out.println("Erro ao salvar recibo: " + e.getMessage());
-		}
-
-
-	}
-
-	public Pedido criarPedido(Cliente cliente, Restaurante restaurante, String conteudoQRCode) {
-		Map<String, String> mapaMesas = restaurante.getMapaMesas(); // QR -> número da mesa
-
-		if (!mapaMesas.containsKey(conteudoQRCode)) {
-			System.out.println("QR Code inválido ou mesa não registrada.");
-			return null;
-		}
-
-		String mesa = mapaMesas.get(conteudoQRCode);
-
-		// Verifica se cliente já tem pedido ativo na mesa
-		for (Pedido pedido : restaurante.getPedidosAtivos()) {
-			if (pedido.getCliente().equals(cliente) &&
-					mesa.equals(pedido.getMesa()) &&
-					!pedido.isEntregue() &&
-					!pedido.getStatusPedido().equals(StatusPedido.CANCELADO)) {
-				System.out.println("Você já possui um pedido em andamento nesta mesa.");
-				return null;
-			}
-		}
-
-		Pedido novoPedido = new Pedido(mesa, TipoAtendimento.LOCAL);
-		novoPedido.setCliente(cliente);
-		novoPedido.setRestaurante(restaurante);
-
-		restaurante.addPedido(novoPedido);
-		cliente.getPedidos().add(novoPedido);
-
-		System.out.println("Pedido iniciado com sucesso na mesa " + mesa);
-		return novoPedido;
-	}
-
-	public void finalizarPagamento(Pedido pedido) {
-		pedido.setPago(true);
-		System.out.println("Pagamento realizado com sucesso!");
-
-		notificarCozinha(pedido);
-	}
-
-	public void finalizarPagamento(Pedido pedido, TiposPagamento tipoPagto) {
 	}
 }

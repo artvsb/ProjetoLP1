@@ -1,31 +1,42 @@
 package model;
 
+import enums.StatusPedido;
+
 import java.util.*;
 import java.util.stream.Collectors;
-import enums.StatusPedido;
-import model.interfaces.GerarID;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Restaurante {
-	private Map<String, String> mapaMesas = new HashMap<>();
-	private List<Pedido> pedidos = new ArrayList<>();
-	private String id, nome, cnpj, telefone, email, endereco;
+	private String id;
+	private String nome;
+	private String cnpj;
+	private String telefone;
+	private String email;
+	private String endereco;
+	private Map<String, Double> vouchers = new HashMap<>();
 	private Administrador administrador;
+	private List<ItemCardapio> menu = new ArrayList<>();
+	private Map<String, String> mapaMesas;
+	private List<Pedido> pedidos;
 	private List<Funcionario> funcionarios;
-	private Map<String, Restaurante> restaurantes = new HashMap<>();
+	private double TxEntregaPrioritaria, TxCancelamento;
 
-	public Map<String, String> getMapaMesas() { return mapaMesas; }
-
+	// ============================
+	// CONSTRUTOR
+	// ============================
 	public Restaurante(String nome, String cnpj, String telefone, String email, String endereco) {
 		this.nome = nome;
 		this.cnpj = cnpj;
 		this.telefone = telefone;
 		this.email = email;
 		this.endereco = endereco;
+		this.pedidos = new ArrayList<>();
+		this.mapaMesas = new HashMap<>();
+		this.funcionarios = new ArrayList<>();
 	}
 
+	// ============================
+	// MÉTODOS DE MESA E PEDIDOS
+	// ============================
 	public void adicionarMesa(String qrCode, String numeroMesa) {
 		mapaMesas.put(qrCode, numeroMesa);
 	}
@@ -42,47 +53,131 @@ public class Restaurante {
 				.collect(Collectors.toList());
 	}
 
-	public List<Pedido> getTodosPedidos() {
+	public List<Pedido> getPedidosAtivosOrdenadosPorUrgencia() {
+		return getPedidosAtivos().stream()
+				.sorted(Comparator.comparing(Pedido::getPrevisaoEntrega))
+				.collect(Collectors.toList());
+	}
+
+	public List<Pedido> getPedidos() {
 		return pedidos;
 	}
 
-	public Map<String, Restaurante> getRestaurantes() {
-		return restaurantes;
+	// ============================
+	// FUNCIONÁRIOS
+	// ============================
+	public void addFuncionario(Funcionario funcionario) {
+		if (funcionario != null) {
+			funcionarios.add(funcionario);
+		}
 	}
 
 	public List<Funcionario> getFuncionarios() {
 		return funcionarios;
 	}
 
+	// ============================
+	// GETTERS / SETTERS
+	// ============================
+
+	public List<ItemCardapio> getMenu() {
+		return menu;
+	}
+
+	public void setMenu(List<ItemCardapio> menu) {
+		this.menu = menu;
+	}
+
+
+	public Map<String, String> getMapaMesas() {
+		return mapaMesas;
+	}
+
 	public Administrador getAdministrador() {
 		return administrador;
 	}
 
-	public String getEndereco() {
-		return endereco;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getTelefone() {
-		return telefone;
-	}
-
-	public String getCnpj() {
-		return cnpj;
-	}
-
-	public String getNome() {
-		return nome;
+	public void setAdministrador(Administrador administrador) {
+		this.administrador = administrador;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public List<Pedido> getPedidos() {
-		return pedidos;
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public double getTxEntregaPrioritaria() {
+		return TxEntregaPrioritaria;
+	}
+
+	public void setTxEntregaPrioritaria(double txEntregaPrioritaria) {
+		TxEntregaPrioritaria = txEntregaPrioritaria;
+	}
+
+	public double getTxCancelamento() {
+		return TxCancelamento;
+	}
+
+	public void setTxCancelamento(double txCancelamento) {
+		TxCancelamento = txCancelamento;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public String getCnpj() {
+		return cnpj;
+	}
+
+	public void setCnpj(String cnpj) {
+		this.cnpj = cnpj;
+	}
+
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	public Map<String, Double> getVouchers() {
+		return vouchers;
+	}
+
+	public Double getDescontoVoucher(String codigo) {
+		return vouchers.getOrDefault(codigo.toUpperCase(), 0.0);
+	}
+
+	public boolean isVoucherValido(String codigo) {
+		return vouchers.containsKey(codigo.toUpperCase());
+	}
+
+	public boolean possuiVoucher(String codigo) {
+		return (vouchers != null);
 	}
 }

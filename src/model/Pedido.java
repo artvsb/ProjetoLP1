@@ -14,19 +14,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Pedido {
+	private String comentarioAvaliacao;
+	private int notaAvaliacao;
+	private boolean avaliado = false;
 	private UUID id;
 	private Cliente cliente;
 	private Restaurante restaurante;
-	private LocalDateTime dataHoraProntoPrevisao;
 	private String mesa, justifRecusa;
 	private List<ItemPedido> itens;
 	private StatusPedido statusPedido = StatusPedido.EM_PREPARO;
 	private TipoAtendimento tipoAtendimento;
-	private TiposPagamento tipoPagto;
+	private FormaPagto formaPagto;
 	private boolean pago;
 	private PrioridadeEntrega prioridadeEntrega = PrioridadeEntrega.NORMAL;
-	private LocalDateTime criadoEm;
-	private LocalDateTime previsaoEntrega;
+	private LocalDateTime criadoEm, canceladoEm, previsaoEntrega, prontoEm, entregueEm, dataHoraProntoPrevisao;
+	private double taxaCancelamento = 0.0; //valor padrão zeor
 
 	public Pedido (String mesaOuCliente, TipoAtendimento tipoAtendimento) {
 		this.id = UUID.randomUUID();
@@ -39,9 +41,55 @@ public class Pedido {
 	/* a terceira linha do mét0do define que o nr da mesa só será definido se o atendimento for local;
 	se for para viagem, a  mesa ficará com valor nulo (null). */
 
+	public double getTaxaCancelamento() {
+		return taxaCancelamento;
+	}
+
+	public void setTaxaCancelamento(double taxaCancelamento) {
+		if (this.taxaCancelamento > 0) {
+			System.out.println("A taxa de cancelamento já foi registrada para este pedido.");
+			return;
+		}
+		this.taxaCancelamento = taxaCancelamento;
+	}
+
+	public double getValorEstornado() {
+		if (taxaCancelamento > 0) {
+			return calcularTotal() - taxaCancelamento;
+		}
+		return 0.0;
+	}
+
+	public LocalDateTime getCanceladoEm() {
+		return canceladoEm;
+	}
+
+	public void marcarCancelado() {
+		this.statusPedido = StatusPedido.CANCELADO;
+		this.canceladoEm = LocalDateTime.now();
+	}
+
 	public String getJustifRecusa() { return justifRecusa; }
 
 	public void setJustifRecusa(String justifRecusa) { this.justifRecusa = justifRecusa; }
+
+	public void avaliar(int nota, String comentario) {
+		this.notaAvaliacao = nota;
+		this.comentarioAvaliacao = comentario;
+		this.avaliado = true;
+	}
+
+	public boolean isAvaliado() {
+		return avaliado;
+	}
+
+	public int getNotaAvaliacao() {
+		return notaAvaliacao;
+	}
+
+	public String getComentarioAvaliacao() {
+		return comentarioAvaliacao;
+	}
 
 	public UUID getId() {
 		return id;
@@ -67,6 +115,14 @@ public class Pedido {
 
 	public LocalDateTime getPrevisaoEntrega() {
 		return previsaoEntrega;
+	}
+
+	public void statusCancelado() {
+		this.statusPedido = StatusPedido.CANCELADO;
+	}
+
+	public boolean podeSerCancelado() {
+		return !isEntregue() && this.statusPedido != StatusPedido.CANCELADO;
 	}
 
 	public String getResumoItens() {
@@ -99,8 +155,8 @@ public class Pedido {
 		this.dataHoraProntoPrevisao = dataHoraProntoPrevisao;
 	}
 
-	public void setTipoPagto(TiposPagamento tipoPagto) {
-		this.tipoPagto = tipoPagto;
+	public void setFormaPagto(FormaPagto formaPagto) {
+		this.formaPagto = formaPagto;
 	}
 
 	public void setPago(boolean pago) {
@@ -168,11 +224,23 @@ public class Pedido {
 
 	// Métodos de alterar/consultar o status do pediod  //
 
-	public void marcarPronto() { this.statusPedido = StatusPedido.PRONTO; }
+	public void setPronto() {
+		this.statusPedido = StatusPedido.PRONTO;
+		this.prontoEm = LocalDateTime.now();
+		this.dataHoraProntoPrevisao = prontoEm.plusMinutes(2);
+	}
 
-	public void marcarEntregue() {
+	public void setEntregue() {
 		this.statusPedido = StatusPedido.ENTREGUE;
-		this.dataHoraProntoPrevisao = LocalDateTime.now();
+		this.entregueEm = LocalDateTime.now();
+	}
+
+	public LocalDateTime getProntoEm() {
+		return prontoEm;
+	}
+
+	public LocalDateTime getEntregueEm() {
+		return entregueEm;
 	}
 
 	public void cancelarPedido() { this.statusPedido = StatusPedido.CANCELADO; }
@@ -208,7 +276,7 @@ public class Pedido {
 
 	public boolean isPago() { return pago; }
 
-	public TiposPagamento getTipoPagto() { return tipoPagto; }
+	public FormaPagto getFormaPagto() { return formaPagto; }
 
 	public int getTempoPreparoEstim() { return itens.stream().mapToInt(ItemPedido::getTempoPreparo).max().orElse(0); }
 
@@ -223,6 +291,8 @@ public class Pedido {
 
 		return Duration.between(agora, previsao).toMinutes();
 	}
+
+	public FormaPagto getFormaPagamento() { return formaPagto; }
 
 }
 
