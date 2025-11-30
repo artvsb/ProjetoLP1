@@ -13,6 +13,7 @@ public class AdministradorController {
 	public AdministradorController(Restaurante restaurante) {
 		this.administradorService = new AdministradorService(restaurante);
 	}
+
 	//========== RESTAURANTE =================
 
 	public void criarRestaurante(Restaurante restaurante) {

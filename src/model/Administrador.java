@@ -1,28 +1,19 @@
 package model;
 
-import enums.NivelAcesso;
-import model.interfaces.IDGenerator;
-import model.interfaces.PermissaoPedido;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Administrador extends Pessoa implements IDGenerator {
-	private NivelAcesso nivelAcesso;
-	private boolean ativo;
+public class Administrador extends Pessoa {
 	protected Restaurante restaurante;
 	private Set<String> idsAdministrador = new HashSet<>();
 	private boolean podeCancelarPedido = true;
+	protected String id;
 
-	public Administrador(String nome, String login, String senha, String telefone, String cpf, String email, NivelAcesso nivelAcesso, Restaurante restaurante) {
+	public Administrador(String nome, String login, String senha, String telefone, String cpf, String email, Restaurante restaurante) {
 			super(nome, login, senha, telefone, cpf, email);
-			this.nivelAcesso = nivelAcesso;
-			this.ativo = true;
 			this.restaurante = restaurante;
 	}
-	
-	public boolean isAtivo() { return ativo; }
 
 	public boolean isPodeCancelarPedido() {
 		return podeCancelarPedido;
@@ -32,27 +23,19 @@ public class Administrador extends Pessoa implements IDGenerator {
 		this.podeCancelarPedido = podeCancelarPedido;
 	}
 
-	public void desativar() { this.ativo = false; }
-
-	public void ativar() { this.ativo = true; }
-
 	@Override
-	public String gerarId() {
-		String id;
-		do {
-			long hash = Math.abs(UUID.randomUUID().getMostSignificantBits());
-			long numero = hash % 100000L;
-			id = String.format("A%05d", numero);
-		} while (idsAdministrador.contains(id));
-
-		idsAdministrador.add(id);
+	public String getId() {
 		return id;
 	}
 
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	@Override
 	public String toString() {
-		return "Administrador: " + "\nNome: " + nome + "\nLogin: " + login + "\nTelefone: " + telefone + "\nNível de Acesso: " + nivelAcesso + "\nAtivo: " + ativo;
+		return "Administrador: " + "\nNome: " + nome + "\nLogin: " + login + "\nTelefone: " + telefone;
 	}
 
 	@Override

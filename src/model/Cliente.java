@@ -6,7 +6,7 @@ import model.interfaces.PermissaoPedido;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class Cliente extends Pessoa implements IDGenerator, PermissaoPedido {
+public class Cliente extends Pessoa implements PermissaoPedido {
 
 	private String mesa;
 	private String codigoRecup;

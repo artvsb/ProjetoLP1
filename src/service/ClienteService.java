@@ -6,17 +6,16 @@ import model.Cliente;
 import model.ItemPedido;
 import model.Pedido;
 import model.Restaurante;
+import model.interfaces.IDGenerator;
 
 import java.util.*;
 
 public class ClienteService {
 
 	private List<Cliente> clientes = new ArrayList<>();
-	private Random random = new Random();
 	private Map<String, List<String>> cartoesPorCliente = new HashMap<>();
 
 
-	@Override
 	public void salvar(Cliente cliente) {
 		String id = cliente.gerarId();
 		cliente.setId(id);

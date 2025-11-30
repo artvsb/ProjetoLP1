@@ -11,8 +11,8 @@ public class FuncionarioController {
     private FuncionarioService funcionarioService = new FuncionarioService();
 
     public void cadastrarFuncionario(Funcionario f) {
-        funcionarioService.cadastrarFuncionario(f.getRestaurante(), f);
-    }
+        funcionarioService.cadastrar(f);
+    }  // OK
 
     public List<Funcionario> listarFuncionarios() {
         return funcionarioService.listarFuncionarios();

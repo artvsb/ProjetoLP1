@@ -1,14 +1,38 @@
 package service;
 
 import model.*;
+import model.interfaces.IDGenerator;
+
 import java.util.*;
 
-public class AdministradorService {
+public class AdministradorService implements IDGenerator {
 	private Restaurante restaurante;
 	private List<Restaurante> restaurantesGeral = new ArrayList<>();
+	private final Set<String> idsAdministrador = new HashSet<>();
+	private final Random random = new Random();
+	private final List<Administrador> administradores = new ArrayList<>();
+
 
 	public AdministradorService(Restaurante restaurante) {
 		this.restaurante = restaurante;
+	}
+
+	// ======== ADMIN ========
+
+	public void cadastrarAdministrador(Administrador a) {
+		a.setId(gerarId());
+		administradores.add(a);
+	}
+
+	public List<Administrador> listarAdministradores() {
+		return new ArrayList<>(administradores);
+	}
+
+	public Administrador buscarPorId(String id) {
+		return administradores.stream()
+				.filter(a -> id.equals(a.getIdAdministrador()))
+				.findFirst()
+				.orElse(null);
 	}
 
 	// ========== RESTAURANTE ==================
@@ -226,5 +250,20 @@ public class AdministradorService {
 		if (!vouchers.containsKey(codigoUpper)) return false;
 		vouchers.put(codigoUpper, novoDesconto);
 		return true;
+	}
+
+	@Override
+	public String gerarId() {
+		String id;
+		do {
+			StringBuilder sb = new StringBuilder("A"); // prefixo de Administrador
+			for (int i = 0; i < 7; i++) {
+				sb.append(random.nextInt(10));
+			}
+			id = sb.toString();
+		} while (idsAdministrador.contains(id));
+
+		idsAdministrador.add(id);
+		return id;;
 	}
 }

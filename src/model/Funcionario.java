@@ -1,7 +1,4 @@
 package model;
-import enums.CARGO;
-import enums.NivelAcesso;
-import model.interfaces.IDGenerator;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -12,9 +9,7 @@ public class Funcionario extends Pessoa {
     protected String id;
 	private boolean recebeBonus;
 	private double totalBonus;
-    protected CARGO cargo;
 	private boolean ativo;
-	private NivelAcesso nivelAcesso;
 	private boolean acessoCozinha;
 	private Set<String> idsFuncionario = new HashSet<>();
 	private Random random;
@@ -44,28 +39,6 @@ public class Funcionario extends Pessoa {
 		this.id = id;
 	} deve ser removida, pois já existe o métod0 gerarId() em Service */
 
-    public CARGO getCargo() {
-        return cargo;
-    }
-
-	public NivelAcesso getNivelAcesso() {
-		return nivelAcesso;
-	}
-
-	public void setNivelAcesso(NivelAcesso nivelAcesso) {
-		this.nivelAcesso = nivelAcesso;
-	}
-
-	public void setCargo(CARGO cargo) {
-        this.cargo = cargo;
-    }
-
-    @Override
-    public String toString() {
-        return "Funcionario{" +
-                "CARGO='" + cargo +
-                '}';
-    }
 
 	public boolean isRecebeBonus() {
 		return recebeBonus;
@@ -110,6 +83,23 @@ public class Funcionario extends Pessoa {
 
 	public boolean temAcessoCozinha() {
 		return acessoCozinha;
+	}
+
+	@Override
+	public String toString() {
+		return "Funcionario{" +
+				"id='" + id + '\'' +
+				", recebeBonus=" + recebeBonus +
+				", totalBonus=" + totalBonus +
+				", ativo=" + ativo +
+				", acessoCozinha=" + acessoCozinha +
+				", idsFuncionario=" + idsFuncionario +
+				", random=" + random +
+				", funcionariosPorId=" + funcionariosPorId +
+				", funcionariosPorCpf=" + funcionariosPorCpf +
+				", funcionarioPorEmail=" + funcionarioPorEmail +
+				", restaurante=" + restaurante +
+				'}';
 	}
 
 }
