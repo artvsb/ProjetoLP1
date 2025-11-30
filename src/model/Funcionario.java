@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public abstract class Funcionario extends Pessoa {
+public class Funcionario extends Pessoa {
     protected String id;
 	private boolean recebeBonus;
 	private double totalBonus;
@@ -128,3 +128,4 @@ public abstract class Funcionario extends Pessoa {
 	}
 
 }
+
