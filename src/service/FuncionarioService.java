@@ -1,57 +1,54 @@
 package service;
 
 import model.Funcionario;
-import model.Restaurante;
+import model.interfaces.IDGenerator;
 
 import java.util.*;
 
-public class FuncionarioService {
-    private ArrayList<Funcionario> funcionarios;
-	private Random random;
-	private Set<String> idsGerados;
+public class FuncionarioService implements IDGenerator {
+	private Set<String> idsFuncionario = new HashSet<>();
+	private Random random = new Random();
+	private List<Funcionario> funcionarios = new ArrayList<>();
+
 
 	public FuncionarioService() {
-		this.idsGerados = new HashSet<>();
+		this.idsFuncionario = new HashSet<>();
 		this.random = new Random();
 		this.funcionarios = new ArrayList<>();
 	}
 
 	public void cadastrar(Funcionario f) {
-        funcionarios.add(f);
-        System.out.println("Id: " + f.getId());
-        System.out.println("Nome: " + f.getNome());
-        System.out.println("CPF: " + f.getCpf());
-        System.out.println("Telefone: " + f.getTelefone());
-        System.out.println("E-mail: " + f.getEmail());
-        System.out.println("Login: " + f.getLogin());
-        System.out.println("Senha: " + f.getSenha());
-    }
+		f.setId(gerarId()); // usa o mét0do da interface, implementado logo abixo
+		funcionarios.add(f);
+	}
 
-    public void listar() {
+	@Override
+	public String gerarId() {
+		String id;
+		do {
+			StringBuilder sb = new StringBuilder("F");
+			for (int i = 0; i < 7; i++) {
+				sb.append(random.nextInt(10));
+			}
+			id = sb.toString();
+		} while (idsFuncionario.contains(id));
+
+		idsFuncionario.add(id);
+		return id;
+	}
+
+
+	public void listar() {
         for (Funcionario f : funcionarios) {
-            System.out.println("Id: " + f.getId());
             System.out.println("Nome: " + f.getNome());
-            System.out.println("CPF: " + f.getCpf());
-            System.out.println("Telefone: " + f.getTelefone());
-            System.out.println("E-mail: " + f.getEmail());
         }
     }
 
-    public void atualizar(String nomePesq, String novoNome, String telPesq, String novoTel, String emailPesq, String novoEmail) {
+    public void atualizar(String nomepesq, String novoNome) {
         for (Funcionario f : funcionarios) {
-            if (f.getNome().equalsIgnoreCase(nomePesq)) {
+            if (f.getNome().equalsIgnoreCase(nomepesq)) {
                 f.setNome(novoNome);
                 System.out.println("Nome atualizado: " + novoNome);
-                return;
-            }
-            if (f.getTelefone().equalsIgnoreCase(telPesq)) {
-                f.setTelefone(novoTel);
-                System.out.println("Telefone atualizado: " + novoTel);
-                return;
-            }
-            if (f.getEmail().equalsIgnoreCase(emailPesq)) {
-                f.setEmail(novoEmail);
-                System.out.println("E-mail atualizado: " + novoEmail);
                 return;
             }
         }
@@ -76,12 +73,6 @@ public class FuncionarioService {
     }
 
     public void deletarFuncionario(String nome) {
-    }
-
-    public void cadastrarFuncionario(Funcionario f) {
-		String id = f.gerarId();
-		f.setId(id);
-		funcionarios.add(f);
     }
 
 	public List<Funcionario> getFuncionarios() {

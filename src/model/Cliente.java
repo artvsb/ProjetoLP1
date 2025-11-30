@@ -1,13 +1,13 @@
 package model;
 
+import model.interfaces.IDGenerator;
 import model.interfaces.PermissaoPedido;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class Cliente extends Pessoa implements PermissaoPedido {
+public class Cliente extends Pessoa implements IDGenerator, PermissaoPedido {
 
-	private String id;
 	private String mesa;
 	private String codigoRecup;
 	private boolean isAdmin = false;
@@ -16,7 +16,7 @@ public class Cliente extends Pessoa implements PermissaoPedido {
 	private Set<UUID> historicoRestaurantes = new HashSet<>();
 	private LocalDateTime criadoEm = LocalDateTime.now();
 	private Random random;
-	private Set<String> idsGerados = new HashSet<>();
+	private final Set<String> idsCliente = new HashSet<>();
 	private Map<String, Cliente> clientesPorLogin = new HashMap<>();
 	private Map<String, Cliente> clientesPorCpf = new HashMap<>();
 	private Map<String, Cliente> clientesPorEmail = new HashMap<>();
@@ -27,26 +27,12 @@ public class Cliente extends Pessoa implements PermissaoPedido {
 	// =====================
 	public Cliente(String nome, String login, String senha, String telefone, String cpf, String email) {
 		super(nome, login, senha, telefone, cpf, email);
-		this.id = id;
-	}
-
-	@Override
-	public String gerarId() {
-		String id;
-		do {
-			id = "CL" + (100000 + random.nextInt(900000));
-		} while (idsGerados.contains(id));
-		idsGerados.add(id);
-		return id;
 	}
 
 	// =====================
 	// GETTERS / SETTERS
 	// =====================
-	@Override
-	public String getId() {
-		return id;
-	}
+
 
 	public String getMesa() {
 		return mesa;
@@ -109,5 +95,20 @@ public class Cliente extends Pessoa implements PermissaoPedido {
 				"\nID: " + id +
 				"\nNome: " + nome +
 				"\nMesa: " + mesa;
+	}
+
+	@Override
+	public String gerarId() {
+		String id;
+		do {
+			StringBuilder sb = new StringBuilder("C");
+			for (int i = 0; i < 7; i++) {
+				sb.append(random.nextInt(10));
+			}
+			id = sb.toString();
+		} while (idsCliente.contains(id));
+
+		idsCliente.add(id);
+		return id;
 	}
 }

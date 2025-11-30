@@ -1,13 +1,14 @@
 package model;
 
 import enums.NivelAcesso;
+import model.interfaces.IDGenerator;
 import model.interfaces.PermissaoPedido;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Administrador extends Pessoa  {
+public class Administrador extends Pessoa implements IDGenerator {
 	private NivelAcesso nivelAcesso;
 	private boolean ativo;
 	protected Restaurante restaurante;
@@ -49,7 +50,8 @@ public class Administrador extends Pessoa  {
 		} while (idsAdministrador.contains(id));
 
 		idsAdministrador.add(id);
-		return id;	}
+		return id;
+	}
 
 
 	@Override

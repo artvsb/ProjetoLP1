@@ -13,7 +13,6 @@ public abstract class Pessoa {
 	public String getId() { return id; }
 
     public Pessoa(String nome, String login, String senha, String telefone, String cpf, String email) {
-        this.id = id;
 		this.nome = nome;
 		this.login = login;
         this.senha = senha;
@@ -66,15 +65,9 @@ public abstract class Pessoa {
         return telefone;
     }
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-	public abstract String gerarId(Administrador administrador);
-
-	public abstract String gerarId();
-
-	public abstract String gerarId(Funcionario funcionario);
+	public void setId(String Id) {
+		this.id = id;
+	};
 
 	@Override
     public String toString() {

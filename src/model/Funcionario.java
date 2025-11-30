@@ -1,6 +1,7 @@
 package model;
 import enums.CARGO;
 import enums.NivelAcesso;
+import model.interfaces.IDGenerator;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class Funcionario extends Pessoa {
 	private boolean ativo;
 	private NivelAcesso nivelAcesso;
 	private boolean acessoCozinha;
-	private Set<String> idsGerados = new HashSet<>();
+	private Set<String> idsFuncionario = new HashSet<>();
 	private Random random;
 	private Map<String, Funcionario> funcionariosPorId;
 	private Map<String, Funcionario> funcionariosPorCpf;
@@ -24,7 +25,6 @@ public class Funcionario extends Pessoa {
 
 	public Funcionario(String nome, String login, String senha, String telefone, String cpf, String email) {
 		super(nome, login, senha, telefone, cpf, email);
-		this.cargo = cargo;
 		this.ativo = true;
     }
 
@@ -40,24 +40,9 @@ public class Funcionario extends Pessoa {
 		return id;
 	}
 
-	@Override
-	public String gerarId(Funcionario funcionario) {
-		String id;
-		do {
-			StringBuilder sb = new StringBuilder("F");
-			for (int i = 0; i < 7; i++) {
-				sb.append(random.nextInt(10)); // gera de 0 a 9
-			}
-			id = sb.toString();
-		} while (idsGerados.contains(id)); // evita duplicados
-
-		idsGerados.add(id);
-		return id;
-	}
-
-	public void setId(String id) {
+	/* public void setId(String id) {
 		this.id = id;
-	}
+	} deve ser removida, pois já existe o métod0 gerarId() em Service */
 
     public CARGO getCargo() {
         return cargo;
