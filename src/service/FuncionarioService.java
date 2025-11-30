@@ -54,17 +54,7 @@ public class FuncionarioService implements IDGenerator {
         }
         System.out.println("Funcionário não encontrado.");
     }
-
-    public void deletar(String nome) {
-        for (Funcionario f : funcionarios) {
-            if (f.getNome().equalsIgnoreCase(nome)) {
-                funcionarios.remove(f);
-                System.out.println("Removido com sucesso.");
-            }
-        }
-        System.out.println("Funcionário não encontrado.");
-    }
-
+	
     public List<Funcionario> listarFuncionarios() {
         return null;
     }
