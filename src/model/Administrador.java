@@ -21,11 +21,7 @@ public class Administrador extends Pessoa implements IDGenerator {
 			this.ativo = true;
 			this.restaurante = restaurante;
 	}
-
-	public NivelAcesso getNivelAcesso() { return nivelAcesso; }
-
-	public void setNivelAcesso(NivelAcesso nivelAcesso) { this.nivelAcesso = nivelAcesso; }
-
+	
 	public boolean isAtivo() { return ativo; }
 
 	public boolean isPodeCancelarPedido() {
