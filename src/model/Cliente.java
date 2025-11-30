@@ -96,19 +96,4 @@ public class Cliente extends Pessoa implements PermissaoPedido {
 				"\nNome: " + nome +
 				"\nMesa: " + mesa;
 	}
-
-	@Override
-	public String gerarId() {
-		String id;
-		do {
-			StringBuilder sb = new StringBuilder("C");
-			for (int i = 0; i < 7; i++) {
-				sb.append(random.nextInt(10));
-			}
-			id = sb.toString();
-		} while (idsCliente.contains(id));
-
-		idsCliente.add(id);
-		return id;
-	}
 }

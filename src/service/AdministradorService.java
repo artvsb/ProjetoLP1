@@ -30,7 +30,7 @@ public class AdministradorService implements IDGenerator {
 
 	public Administrador buscarPorId(String id) {
 		return administradores.stream()
-				.filter(a -> id.equals(a.getIdAdministrador()))
+				.filter(a -> id.equals(a.getId()))
 				.findFirst()
 				.orElse(null);
 	}
@@ -264,6 +264,6 @@ public class AdministradorService implements IDGenerator {
 		} while (idsAdministrador.contains(id));
 
 		idsAdministrador.add(id);
-		return id;;
+		return id;
 	}
 }

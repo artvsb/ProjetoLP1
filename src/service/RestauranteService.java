@@ -3,10 +3,11 @@ package service;
 import enums.StatusPedido;
 import model.Pedido;
 import model.Restaurante;
+import model.interfaces.IDGenerator;
 
 import java.util.*;
 
-public class RestauranteService implements Cadastro<Restaurante> {
+public class RestauranteService implements IDGenerator {
 	private HashSet<String> idsGerados = new HashSet<>();
 	private Random random = new Random();
 	private List<Restaurante> restaurantes = new ArrayList<>();
@@ -33,6 +34,15 @@ public class RestauranteService implements Cadastro<Restaurante> {
 		return restaurantes;
 	}
 
+	public List<Restaurante> listarRestaurante() { return new ArrayList<>(restaurantes); }
+
+	public Restaurante buscarPorId(String id) {
+		return restaurantes.stream()
+				.filter(r -> id.equals(r.getId()))
+				.findFirst()
+				.orElse(null);
+	}
+
 	public void entregarPedido(Pedido pedido, Restaurante restaurante) {
 		if (pedido != null && restaurante.getPedidosAtivos().contains(pedido)) {
 			pedido.setStatusPedido(StatusPedido.ENTREGUE);
@@ -40,5 +50,19 @@ public class RestauranteService implements Cadastro<Restaurante> {
 		}
 	}
 
+	@Override
+	public String gerarId() {
+		String id;
+		do {
+			StringBuilder sb = new StringBuilder("R"); // prefixo de Restaurante
+			for (int i = 0; i < 7; i++) {
+				sb.append(random.nextInt(10));
+			}
+			id = sb.toString();
+		} while (idsGerados.contains(id));
+
+		idsGerados.add(id);
+		return id;
+	}
 }
 

@@ -38,12 +38,6 @@ public class Administrador extends Pessoa {
 		return "Administrador: " + "\nNome: " + nome + "\nLogin: " + login + "\nTelefone: " + telefone;
 	}
 
-	@Override
-	public boolean podeCancelarPedido(Pedido pedido) {
-		// Administrador pode cancelar qualquer pedido não entregue
-		return pedido.podeSerCancelado();
-	}
-
 	public Restaurante getRestaurante() {
 		return restaurante;
 	}

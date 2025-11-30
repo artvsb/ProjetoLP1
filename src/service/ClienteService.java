@@ -17,8 +17,6 @@ public class ClienteService {
 
 
 	public void salvar(Cliente cliente) {
-		String id = cliente.gerarId();
-		cliente.setId(id);
 		clientes.add(cliente);
 	}
 
