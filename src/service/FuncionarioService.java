@@ -1,10 +1,11 @@
 package service;
 
 import model.Funcionario;
+import model.Restaurante;
 
 import java.util.*;
 
-public class FuncionarioService implements Cadastro<Funcionario> {
+public class FuncionarioService {
     private ArrayList<Funcionario> funcionarios;
 	private Random random;
 	private Set<String> idsGerados;
@@ -57,16 +58,11 @@ public class FuncionarioService implements Cadastro<Funcionario> {
     public void deletarFuncionario(String nome) {
     }
 
-    public void cadastrarFuncionario() {
+    public void cadastrarFuncionario(Funcionario f) {
+		String id = f.gerarId();
+		f.setId(id);
+		funcionarios.add(f);
     }
-
-	@Override
-	public void salvar(Funcionario funcionario) {
-		String id = gerarId();
-		funcionario.setId(id);
-		funcionarios.add(funcionario);
-		System.out.println("Funcionário cadastrado com ID: " + id);
-	}
 
 	public List<Funcionario> getFuncionarios() {
 		return funcionarios;

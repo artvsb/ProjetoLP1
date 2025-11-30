@@ -17,6 +17,9 @@ public class Cliente extends Pessoa implements PermissaoPedido {
 	private LocalDateTime criadoEm = LocalDateTime.now();
 	private Random random;
 	private Set<String> idsGerados = new HashSet<>();
+	private Map<String, Cliente> clientesPorLogin = new HashMap<>();
+	private Map<String, Cliente> clientesPorCpf = new HashMap<>();
+	private Map<String, Cliente> clientesPorEmail = new HashMap<>();
 
 
 	// =====================

@@ -3,6 +3,7 @@ import enums.CARGO;
 import enums.NivelAcesso;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -16,8 +17,10 @@ public abstract class Funcionario extends Pessoa {
 	private boolean acessoCozinha;
 	private Set<String> idsGerados = new HashSet<>();
 	private Random random;
-
-
+	private Map<String, Funcionario> funcionariosPorId;
+	private Map<String, Funcionario> funcionariosPorCpf;
+	private Map<String, Funcionario> funcionarioPorEmail;
+	private Restaurante restaurante;
 
 	public Funcionario(String nome, String login, String senha, String telefone, String cpf, String email) {
 		super(nome, login, senha, telefone, cpf, email);

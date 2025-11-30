@@ -62,6 +62,8 @@ public abstract class Pessoa {
         this.telefone = telefone;
     }
 
+	public abstract String gerarId(Administrador administrador);
+
 	public abstract String gerarId();
 
 	public abstract String gerarId(Funcionario funcionario);

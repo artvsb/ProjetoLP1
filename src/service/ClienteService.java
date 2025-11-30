@@ -9,7 +9,7 @@ import model.Restaurante;
 
 import java.util.*;
 
-public class ClienteService implements Cadastro<Cliente> {
+public class ClienteService {
 
 	private List<Cliente> clientes = new ArrayList<>();
 	private Random random = new Random();
@@ -18,7 +18,7 @@ public class ClienteService implements Cadastro<Cliente> {
 
 	@Override
 	public void salvar(Cliente cliente) {
-		String id = gerarId();
+		String id = cliente.gerarId();
 		cliente.setId(id);
 		clientes.add(cliente);
 	}
