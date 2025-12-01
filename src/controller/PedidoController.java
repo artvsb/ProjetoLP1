@@ -32,6 +32,6 @@ public class PedidoController {
 	}
 
 	public Pedido buscarPedidoPorId(List<Pedido> pedidos, String id) {
-		return pedidoService.buscarPedidoPorId(pedidos, id);
+		return pedidoService.buscarPedido(pedidos, id);
 	}
 }

@@ -2,23 +2,21 @@ package model;
 
 import enums.PrioridadeEntrega;
 import enums.StatusPedido;
-import enums.TipoAtendimento;
 import enums.*;
-
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Pedido {
-	private String comentarioAvaliacao;
+	private String id, comentarioAvaliacao;
 	private int notaAvaliacao;
 	private boolean avaliado = false;
-	private UUID id;
 	private Cliente cliente;
+	private double total;
+	private boolean entregue;
 	private Restaurante restaurante;
 	private String mesa, justifRecusa;
 	private List<ItemPedido> itens;
@@ -26,16 +24,19 @@ public class Pedido {
 	private TipoAtendimento tipoAtendimento;
 	private FormaPagto formaPagto;
 	private boolean pago;
+	private Funcionario funcionarioResponsavel;
 	private PrioridadeEntrega prioridadeEntrega = PrioridadeEntrega.NORMAL;
 	private LocalDateTime criadoEm, canceladoEm, previsaoEntrega, prontoEm, entregueEm, dataHoraProntoPrevisao;
 	private double taxaCancelamento = 0.0; //valor padrão zeor
 
-	public Pedido (String mesaOuCliente, TipoAtendimento tipoAtendimento) {
-		this.id = UUID.randomUUID();
-		this.mesa = tipoAtendimento == TipoAtendimento.LOCAL ? mesaOuCliente : null;
+	public Pedido (Cliente cliente, Restaurante restaurante,
+				   Funcionario funcionarioResponsavel,double total) {
 		this.itens = new ArrayList<>();
 		this.statusPedido = StatusPedido.EM_PREPARO;
 		this.justifRecusa = null;
+		this.entregue = false;
+		this.total = total;
+		this.funcionarioResponsavel = funcionarioResponsavel;
 		this.criadoEm = LocalDateTime.now();
 	}
 	/* a terceira linha do mét0do define que o nr da mesa só será definido se o atendimento for local;
@@ -83,6 +84,58 @@ public class Pedido {
 		return avaliado;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setComentarioAvaliacao(String comentarioAvaliacao) {
+		this.comentarioAvaliacao = comentarioAvaliacao;
+	}
+
+	public void setNotaAvaliacao(int notaAvaliacao) {
+		this.notaAvaliacao = notaAvaliacao;
+	}
+
+	public void setAvaliado(boolean avaliado) {
+		this.avaliado = avaliado;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public void setEntregue(boolean entregue) {
+		this.entregue = entregue;
+	}
+
+	public Funcionario getFuncionarioResponsavel() {
+		return funcionarioResponsavel;
+	}
+
+	public void setFuncionarioResponsavel(Funcionario funcionarioResponsavel) {
+		this.funcionarioResponsavel = funcionarioResponsavel;
+	}
+
+	public void setCriadoEm(LocalDateTime criadoEm) {
+		this.criadoEm = criadoEm;
+	}
+
+	public void setCanceladoEm(LocalDateTime canceladoEm) {
+		this.canceladoEm = canceladoEm;
+	}
+
+	public void setProntoEm(LocalDateTime prontoEm) {
+		this.prontoEm = prontoEm;
+	}
+
+	public void setEntregueEm(LocalDateTime entregueEm) {
+		this.entregueEm = entregueEm;
+	}
+
 	public int getNotaAvaliacao() {
 		return notaAvaliacao;
 	}
@@ -91,15 +144,7 @@ public class Pedido {
 		return comentarioAvaliacao;
 	}
 
-	public UUID getId() {
-		return id;
-	}
-
 	public LocalDateTime getCriadoEm() { return criadoEm; }
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
 
 	public Cliente getCliente() {
 		return cliente;

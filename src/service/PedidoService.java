@@ -3,14 +3,49 @@ package service;
 import enums.FormaPagto;
 import enums.TipoAtendimento;
 import model.*;
+import model.interfaces.IDGenerator;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-public class PedidoService {
+public class PedidoService implements IDGenerator {
+	private final Set<String> idsPedido = new HashSet<>();
+	private final Random random = new Random();
+	private final List<Pedido> pedidos = new ArrayList<>();
 
 	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, String mesaOuNome, TipoAtendimento tipo) {
 
+	}
+
+	@Override
+	public String gerarId() {
+		String id;
+		do {
+			StringBuilder sb = new StringBuilder("P"); // prefixo de Pedido
+			for (int i = 0; i < 7; i++) {
+				sb.append(random.nextInt(10));
+			}
+			id = sb.toString();
+		} while (idsPedido.contains(id));
+
+		idsPedido.add(id);
+		return id;
+	}
+
+	public void cadastrar(Pedido p) {
+		p.setId(gerarId());
+		pedidos.add(p);
+		System.out.println("Pedido cadastrado | ID Pedido: " + p.getId());
+	}
+
+	public List<Pedido> listarPedidos() {
+		return new ArrayList<>(pedidos);
+	}
+
+	public Pedido buscarPedido(String id) {
+		return pedidos.stream()
+				.filter(p -> id.equals(p.getId()))
+				.findFirst()
+				.orElse(null);
 	}
 
 	public boolean editarPedido(Pedido pedido, List<ItemPedido> novosItens) {
@@ -40,7 +75,7 @@ public class PedidoService {
 		return true;
 	}
 
-	public Pedido buscarPedidoPorId(List<Pedido> pedidos, String id) {
+	public Pedido buscarPedido(List<Pedido> pedidos, String id) {
 		for (Pedido pedido : pedidos) {
 			if (pedido.getId().toString().equals(id)) {
 				return pedido;
@@ -48,4 +83,6 @@ public class PedidoService {
 		}
 		return null;
 	}
+
+
 }

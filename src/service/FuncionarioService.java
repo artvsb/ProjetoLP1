@@ -44,7 +44,7 @@ public class FuncionarioService implements IDGenerator {
         }
     }
 
-    public void atualizar(String nomepesq, String novoNome) {
+    public void atualizarFuncionario(String nomepesq, String novoNome) {
         for (Funcionario f : funcionarios) {
             if (f.getNome().equalsIgnoreCase(nomepesq)) {
                 f.setNome(novoNome);
@@ -54,15 +54,19 @@ public class FuncionarioService implements IDGenerator {
         }
         System.out.println("Funcionário não encontrado.");
     }
-	
-    public List<Funcionario> listarFuncionarios() {
-        return null;
-    }
 
-    public void atualizarFuncionario(String nome, String novoNome) {
+    public List<Funcionario> listarFuncionarios() {
+        return funcionarios;
     }
 
     public void deletarFuncionario(String nome) {
+		for (Funcionario f : funcionarios) {
+			if (f.getNome().equalsIgnoreCase(nome)) {
+				funcionarios.remove(f);
+				System.out.println("Removido com sucesso.");
+			}
+		}
+		System.out.println("Funcionário não encontrado.");
     }
 
 	public List<Funcionario> getFuncionarios() {
