@@ -29,6 +29,8 @@ public class Pedido {
 	private LocalDateTime criadoEm, canceladoEm, previsaoEntrega, prontoEm, entregueEm, dataHoraProntoPrevisao;
 	private double taxaCancelamento = 0.0; //valor padrão zeor
 
+	public Pedido(){}
+
 	public Pedido (Cliente cliente, Restaurante restaurante,
 				   Funcionario funcionarioResponsavel,double total) {
 		this.itens = new ArrayList<>();

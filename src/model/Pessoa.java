@@ -77,4 +77,8 @@ public abstract class Pessoa {
                 ", telefone=" + telefone +
                 '}';
     }
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
 }

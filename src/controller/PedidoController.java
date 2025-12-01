@@ -11,8 +11,8 @@ public class PedidoController {
 
 	private PedidoService pedidoService = new PedidoService();
 
-	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, String mesaOuNome, TipoAtendimento tipo) {
-		return pedidoService.iniciarPedido(cliente, restaurante, mesaOuNome, tipo);
+	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, String mesaOuNome, TipoAtendimento tipoAtendimento) {
+		return pedidoService.iniciarPedido(cliente, restaurante, tipoAtendimento);
 	}
 
 	public boolean editarPedido(Pedido pedido, List<ItemPedido> novosItens) {
@@ -20,7 +20,7 @@ public class PedidoController {
 	}
 
 	public boolean fecharPedido(Pedido pedido) {
-		return pedidoService.fecharPedido(pedido);
+		return pedidoService.aceitarPedido(pedido);
 	}
 
 	public boolean pagarPedido(Pedido pedido, FormaPagto formaPagto) {

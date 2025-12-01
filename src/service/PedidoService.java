@@ -1,6 +1,7 @@
 package service;
 
 import enums.FormaPagto;
+import enums.StatusPedido;
 import enums.TipoAtendimento;
 import model.*;
 import model.interfaces.IDGenerator;
@@ -12,8 +13,26 @@ public class PedidoService implements IDGenerator {
 	private final Random random = new Random();
 	private final List<Pedido> pedidos = new ArrayList<>();
 
-	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, String mesaOuNome, TipoAtendimento tipo) {
+	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, TipoAtendimento tipoAtendimento) {
+		if (cliente == null || restaurante == null || tipoAtendimento == null) {
+			return null;
+		}
 
+		Pedido novoPedido = new Pedido();
+		novoPedido.setId(gerarId());
+		novoPedido.setCliente(cliente);
+		novoPedido.setRestaurante(restaurante);
+		novoPedido.setTipoAtendimento(tipoAtendimento);
+
+		// Se o cliente estiver em uma mesa
+		if (cliente.getMesa() != null) {
+			novoPedido.setMesa(cliente.getMesa());
+		}
+
+		cliente.getPedidos().add(novoPedido);
+		restaurante.adicionarPedido(novoPedido);
+
+		return novoPedido;
 	}
 
 	@Override
@@ -49,10 +68,27 @@ public class PedidoService implements IDGenerator {
 	}
 
 	public boolean editarPedido(Pedido pedido, List<ItemPedido> novosItens) {
+		if (pedido == null || pedido.isPago()) {
+			return false;
+		}
 
+		if (novosItens == null || novosItens.isEmpty()) {
+			return false;
+		}
+
+		pedido.getItens().clear();
+		pedido.getItens().addAll(novosItens);
+
+		double total = 0.0;
+		for (ItemPedido item : novosItens) {
+			total += item.getPreco() * item.getQtd();
+		}
+		pedido.setTotal(total);
+
+		return true;
 	}
 
-	public boolean fecharPedido(Pedido pedido) {
+	public boolean aceitarPedido(Pedido pedido) {
 		if (pedido != null && !pedido.getItens().isEmpty()) {
 			pedido.setStatusPedido(enums.StatusPedido.EM_PREPARO);
 			return true;
@@ -77,7 +113,7 @@ public class PedidoService implements IDGenerator {
 
 	public Pedido buscarPedido(List<Pedido> pedidos, String id) {
 		for (Pedido pedido : pedidos) {
-			if (pedido.getId().toString().equals(id)) {
+			if (pedido.getId().equals(id)) {
 				return pedido;
 			}
 		}
