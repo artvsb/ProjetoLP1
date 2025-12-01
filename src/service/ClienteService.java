@@ -83,8 +83,16 @@ public class ClienteService {
 	}
 
 
-	public void salvar(Cliente cliente) {
+	public boolean salvar(Cliente cliente) {
+		boolean existe = clientes.stream()
+				.anyMatch(c -> c.getLogin().equalsIgnoreCase(cliente.getLogin()));
+
+		if (existe) {
+			return false; // não salva
+		}
+
 		clientes.add(cliente);
+		return true;
 	}
 
 	public List<Cliente> getClientes() {

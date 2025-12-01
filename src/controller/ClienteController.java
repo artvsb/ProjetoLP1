@@ -15,8 +15,8 @@ public class ClienteController {
 	private ClienteService clienteService = new ClienteService();
 
 	// CADASTRO
-	public void cadastrarCliente(Cliente cliente) {
-		clienteService.salvar(cliente);
+	public boolean cadastrarCliente(Cliente cliente) {
+		return clienteService.salvar(cliente);
 	}
 
 	// LISTAGEM

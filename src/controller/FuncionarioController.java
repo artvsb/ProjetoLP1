@@ -8,11 +8,15 @@ import service.RestauranteService;
 import java.util.List;
 
 public class FuncionarioController {
-    private FuncionarioService funcionarioService = new FuncionarioService();
+    private FuncionarioService funcionarioService;
 
-    public void cadastrarFuncionario(Funcionario f) {
-        funcionarioService.cadastrar(f);
-    }  // OK
+	public FuncionarioController(FuncionarioService funcionarioService) {
+		this.funcionarioService = funcionarioService;
+	}
+
+	public void cadastrarFuncionario(Funcionario f) {
+		funcionarioService.cadastrar(f);
+	}
 
     public List<Funcionario> listarFuncionarios() {
         return funcionarioService.listarFuncionarios();

@@ -21,7 +21,7 @@ public class Funcionario extends Pessoa {
 	public Funcionario(String nome, String login, String senha, String telefone, String cpf, String email) {
 		super(nome, login, senha, telefone, cpf, email);
 		this.ativo = true;
-    }
+	}
 
 	/* talvez apagar depois
     public Funcionario(String nome, String login, String senha, String telefone, String CARGO){
@@ -35,9 +35,9 @@ public class Funcionario extends Pessoa {
 		return id;
 	}
 
-	/* public void setId(String id) {
+	public void setId(String id) {
 		this.id = id;
-	} deve ser removida, pois já existe o métod0 gerarId() em Service */
+	}
 
 
 	public boolean isRecebeBonus() {

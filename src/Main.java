@@ -2,16 +2,18 @@ import controller.*;
 import enums.FormaPagto;
 import enums.TipoAtendimento;
 import model.*;
+import service.FuncionarioService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
+    private static Scanner tcl = new Scanner(System.in);
     private static Restaurante restaurante;
     private static AdministradorController adminController;
     private static FuncionarioController funcController;
+	private static FuncionarioService funcService;
     private static ClienteController clienteController;
     private static PedidoController pedidoController;
 
@@ -24,6 +26,10 @@ public class Main {
         inicializarSistema();
         menuPrincipal();
     }
+
+	// Listas globais para o sistema
+	private static List<Restaurante> listaRestaurantes = new ArrayList<>();
+	private static List<Pedido> listaPedidos = new ArrayList<>();
 
     private static void inicializarSistema() {
         // Criar restaurante padrão
@@ -38,9 +44,12 @@ public class Main {
         restaurante.setTxEntregaPrioritaria(5.0);
         restaurante.setTxCancelamento(3.0);
 
-        // Inicializar controllers
+		// Inivializa service
+		funcService = new FuncionarioService();
+
+		// Inicializar controllers
         adminController = new AdministradorController(restaurante);
-        funcController = new FuncionarioController();
+        funcController = new FuncionarioController(funcService);
         clienteController = new ClienteController();
         pedidoController = new PedidoController();
 
@@ -57,6 +66,18 @@ public class Main {
         admin.setId("ADM-001");
         administradores.add(admin);
         restaurante.setAdministrador(admin);
+
+		// Criar restaurante padrão
+
+		restaurante = new Restaurante(
+				"Restaurante Exemplo",
+				"12.345.678/0001-90",
+				"(84) 98888-8888",
+				"contato@restaurante.com",
+				"Rua Principal, 123"
+		);
+		restaurante.setId("REST-001");
+		listaRestaurantes.add(restaurante);
 
         // Criar algumas mesas padrão
         adminController.cadastrarMesas("QR-MESA-01", "1");
@@ -109,7 +130,7 @@ public class Main {
                     System.out.println("\nEncerrando sistema... Até logo!");
                     System.exit(0);
                 default:
-                    System.out.println("\n❌ Opção inválida!");
+                    System.out.println("\nOpção inválida!");
             }
         }
     }
@@ -139,60 +160,67 @@ public class Main {
             case 0:
                 return;
             default:
-                System.out.println("\n❌ Opção inválida!");
+                System.out.println("\nOpção inválida!");
         }
     }
 
-    private static void cadastrarFuncionario() {
-        System.out.println("\n--- Cadastro de Funcionário ---");
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
-        System.out.print("Login: ");
-        String login = scanner.nextLine();
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
-        System.out.print("Telefone: ");
-        String telefone = scanner.nextLine();
-        System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
+	private static void cadastrarFuncionario() {
+		System.out.println("\n--- Cadastro de Funcionário ---");
+		System.out.print("Nome: ");
+		String nome = tcl.nextLine();
+		System.out.print("Login: ");
+		String login = tcl.nextLine();
+		System.out.print("Senha: ");
+		String senha = lerSenhaSegura();
+		System.out.print("Telefone: ");
+		String telefone = tcl.nextLine();
+		System.out.print("CPF: ");
+		String cpf = tcl.nextLine();
+		System.out.print("Email: ");
+		String email = tcl.nextLine();
 
-        Funcionario func = new Funcionario(nome, login, senha, telefone, cpf, email);
-        func.setId("FUNC-" + String.format("%03d", funcionarios.size() + 1));
+		Funcionario func = new Funcionario(nome, login, senha, telefone, cpf, email);
 
-        funcController.cadastrarFuncionario(func);
-        funcionarios.add(func);
-        restaurante.addFuncionario(func);
+		// Aqui o service (via controller) vai chamar gerarId() e setar o ID:
+		funcController.cadastrarFuncionario(func);
 
-        System.out.println("\n✅ Funcionário cadastrado com sucesso!");
-        System.out.println("ID: " + func.getId());
-    }
+		// Se quiser manter uma lista local na Main, ok:
+		funcionarios.add(func);
+		restaurante.addFuncionario(func);
 
-    private static void cadastrarCliente() {
-        System.out.println("\n--- Cadastro de Cliente ---");
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
-        System.out.print("Login: ");
-        String login = scanner.nextLine();
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
-        System.out.print("Telefone: ");
-        String telefone = scanner.nextLine();
-        System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
+		System.out.println("\nFuncionário cadastrado com sucesso!");
+		System.out.println("ID: " + func.getId());
+	}
+	private static void cadastrarCliente() {
+		System.out.println("\n--- Cadastro de Cliente ---");
+		System.out.print("Nome: ");
+		String nome = tcl.nextLine();
+		System.out.print("Login: ");
+		String login = tcl.nextLine();
+		System.out.print("Senha: ");
+		String senha = lerSenhaSegura(); // usa a mesma validação de senha do funcionário
+		System.out.print("Telefone: ");
+		String telefone = tcl.nextLine();
+		System.out.print("CPF: ");
+		String cpf = tcl.nextLine();
+		System.out.print("Email: ");
+		String email = tcl.nextLine();
 
-        Cliente cliente = new Cliente(nome, login, senha, telefone, cpf, email);
-        cliente.setId("CLI-" + String.format("%03d", clientes.size() + 1));
+		Cliente cliente = new Cliente(nome, login, senha, telefone, cpf, email);
 
-        clienteController.cadastrarCliente(cliente);
-        clientes.add(cliente);
+		// TENTA CADASTRAR PELO CONTROLLER
+		boolean cadastrado = clienteController.cadastrarCliente(cliente);
+		if (!cadastrado) {
+			System.out.println("\nJá existe um cliente com esse login. Tente outro.");
+			return;
+		}
 
-        System.out.println("\n✅ Cliente cadastrado com sucesso!");
-        System.out.println("ID: " + cliente.getId());
-    }
+		// Se deu certo no service/controller, mantém também na lista local da Main
+		clientes.add(cliente);
+
+		System.out.println("\nCliente cadastrado com sucesso!");
+		System.out.println("Login (ID do cliente): " + cliente.getLogin());
+	}
 
     // ═══════════════════════════════════════════════════════════
     // LOGIN ADMINISTRADOR
@@ -201,17 +229,17 @@ public class Main {
     private static void loginAdministrador() {
         System.out.println("\n--- Login Administrador ---");
         System.out.print("Login: ");
-        String login = scanner.nextLine();
+        String login = tcl.nextLine();
         System.out.print("Senha: ");
-        String senha = scanner.nextLine();
+        String senha = tcl.nextLine();
 
         Administrador admin = buscarAdministrador(login, senha);
         if (admin != null) {
-            System.out.println("\n✅ Login realizado com sucesso!");
+            System.out.println("\nLogin realizado com sucesso!");
             System.out.println("Bem-vindo, " + admin.getNome() + "!");
             menuAdministrador(admin);
         } else {
-            System.out.println("\n❌ Login ou senha incorretos!");
+            System.out.println("\nLogin ou senha incorretos!");
         }
     }
 
@@ -282,7 +310,7 @@ public class Main {
                 case 0:
                     return;
                 default:
-                    System.out.println("\n❌ Opção inválida!");
+                    System.out.println("\nOpção inválida!");
             }
         }
     }
@@ -316,23 +344,23 @@ public class Main {
             case 0:
                 return;
             default:
-                System.out.println("\n❌ Opção inválida!");
+                System.out.println("\nOpção inválida!");
         }
     }
 
     private static void adicionarItemMenu() {
         System.out.println("\n--- Adicionar Item ao Menu ---");
         System.out.print("Nome do item: ");
-        String nome = scanner.nextLine();
+        String nome = tcl.nextLine();
         System.out.print("Descrição: ");
-        String descricao = scanner.nextLine();
+        String descricao = tcl.nextLine();
         System.out.print("Preço: R$ ");
         double preco = lerDouble();
         System.out.print("Tempo de preparo (minutos): ");
         int tempo = lerInteiro();
 
         adminController.adicionarItemAoMenu(nome, descricao, preco, tempo);
-        System.out.println("\n✅ Item adicionado com sucesso!");
+        System.out.println("\nItem adicionado com sucesso!");
     }
 
     private static void editarItemMenu() {
@@ -346,25 +374,25 @@ public class Main {
 
             System.out.println("\n--- Editar Item (deixe em branco para manter) ---");
             System.out.print("Novo nome [" + item.getNome() + "]: ");
-            String nome = scanner.nextLine();
+            String nome = tcl.nextLine();
             if (nome.isEmpty()) nome = item.getNome();
 
             System.out.print("Nova descrição [" + item.getDescricao() + "]: ");
-            String descricao = scanner.nextLine();
+            String descricao = tcl.nextLine();
             if (descricao.isEmpty()) descricao = item.getDescricao();
 
             System.out.print("Novo preço [R$ " + item.getPreco() + "]: ");
-            String precoStr = scanner.nextLine();
+            String precoStr = tcl.nextLine();
             double preco = precoStr.isEmpty() ? item.getPreco() : Double.parseDouble(precoStr);
 
             System.out.print("Novo tempo de preparo [" + item.getTempoPreparo() + " min]: ");
-            String tempoStr = scanner.nextLine();
+            String tempoStr = tcl.nextLine();
             int tempo = tempoStr.isEmpty() ? item.getTempoPreparo() : Integer.parseInt(tempoStr);
 
             adminController.editarMenu(item, nome, preco, descricao, tempo);
-            System.out.println("\n✅ Item editado com sucesso!");
+            System.out.println("\nItem editado com sucesso!");
         } else {
-            System.out.println("\n❌ Item não encontrado!");
+            System.out.println("\nItem não encontrado!");
         }
     }
 
@@ -377,9 +405,9 @@ public class Main {
         if (index >= 0 && index < menu.size()) {
             ItemCardapio item = menu.get(index);
             adminController.deletarItem(item);
-            System.out.println("\n✅ Item removido com sucesso!");
+            System.out.println("\nItem removido com sucesso!");
         } else {
-            System.out.println("\n❌ Item não encontrado!");
+            System.out.println("\nItem não encontrado!");
         }
     }
 
@@ -430,39 +458,39 @@ public class Main {
             case 0:
                 return;
             default:
-                System.out.println("\n❌ Opção inválida!");
+                System.out.println("\nOpção inválida!");
         }
     }
 
     private static void cadastrarMesa() {
         System.out.println("\n--- Cadastrar Mesa ---");
         System.out.print("Número da mesa: ");
-        String numero = scanner.nextLine();
+        String numero = tcl.nextLine();
         System.out.print("Código QR: ");
-        String qrCode = scanner.nextLine();
+        String qrCode = tcl.nextLine();
 
         adminController.cadastrarMesas(qrCode, numero);
-        System.out.println("\n✅ Mesa cadastrada com sucesso!");
+        System.out.println("\nMesa cadastrada com sucesso!");
     }
 
     private static void editarMesa() {
         listarMesas();
         System.out.print("\nCódigo QR da mesa a editar: ");
-        String qrCode = scanner.nextLine();
+        String qrCode = tcl.nextLine();
         System.out.print("Novo número da mesa: ");
-        String novoNumero = scanner.nextLine();
+        String novoNumero = tcl.nextLine();
 
         adminController.editarMesas(qrCode, novoNumero);
-        System.out.println("\n✅ Mesa editada com sucesso!");
+        System.out.println("\nMesa editada com sucesso!");
     }
 
     private static void removerMesa() {
         listarMesas();
         System.out.print("\nNúmero da mesa a remover: ");
-        String numero = scanner.nextLine();
+        String numero = tcl.nextLine();
 
         adminController.removerMesa(numero);
-        System.out.println("\n✅ Mesa removida com sucesso!");
+        System.out.println("\nMesa removida com sucesso!");
     }
 
     private static void listarMesas() {
@@ -505,7 +533,7 @@ public class Main {
             case 0:
                 return;
             default:
-                System.out.println("\n❌ Opção inválida!");
+                System.out.println("\nOpção inválida!");
         }
     }
 
@@ -536,22 +564,22 @@ public class Main {
         if (index >= 0 && index < funcs.size()) {
             Funcionario func = funcs.get(index);
             adminController.concederBonusFuncionario(func);
-            System.out.println("\n✅ Bônus concedido com sucesso!");
+            System.out.println("\nBônus concedido com sucesso!");
         } else {
-            System.out.println("\n❌ Funcionário não encontrado!");
+            System.out.println("\nFuncionário não encontrado!");
         }
     }
 
     private static void gerenciarAcessos() {
         listarFuncionarios();
         System.out.print("\nID do funcionário: ");
-        String id = scanner.nextLine();
+        String id = tcl.nextLine();
         System.out.print("Conceder acesso? (S/N): ");
-        String resposta = scanner.nextLine();
+        String resposta = tcl.nextLine();
         boolean conceder = resposta.equalsIgnoreCase("S");
 
         adminController.gerenciarAcessos(id, conceder);
-        System.out.println("\n✅ Acesso " + (conceder ? "concedido" : "revogado") + " com sucesso!");
+        System.out.println("\nAcesso " + (conceder ? "concedido" : "revogado") + " com sucesso!");
     }
 
     private static void menuGerenciarPedidos() {
@@ -579,7 +607,7 @@ public class Main {
             case 0:
                 return;
             default:
-                System.out.println("\n❌ Opção inválida!");
+                System.out.println("\nOpção inválida!");
         }
     }
 
@@ -622,18 +650,18 @@ public class Main {
     private static void cancelarPedidoAdmin() {
         listarPedidosAtivos();
         System.out.print("\nID do pedido a cancelar: ");
-        String id = scanner.nextLine();
+        String id = tcl.nextLine();
 
         Pedido pedido = pedidoController.buscarPedidoPorId(restaurante.getPedidos(), id);
         if (pedido != null) {
             boolean cancelado = adminController.cancelarPedido(pedido);
             if (cancelado) {
-                System.out.println("\n✅ Pedido cancelado com sucesso!");
+                System.out.println("\nPedido cancelado com sucesso!");
             } else {
-                System.out.println("\n❌ Não foi possível cancelar o pedido!");
+                System.out.println("\nNão foi possível cancelar o pedido!");
             }
         } else {
-            System.out.println("\n❌ Pedido não encontrado!");
+            System.out.println("\nPedido não encontrado!");
         }
     }
 
@@ -673,7 +701,7 @@ public class Main {
     private static void criarVoucher() {
         System.out.println("\n--- Criar Voucher ---");
         System.out.print("Código do voucher: ");
-        String codigo = scanner.nextLine();
+        String codigo = tcl.nextLine();
         System.out.print("Desconto (%): ");
         double desconto = lerDouble();
 
@@ -688,7 +716,7 @@ public class Main {
     private static void editarVoucher() {
         listarVouchers();
         System.out.print("\nCódigo do voucher a editar: ");
-        String codigo = scanner.nextLine();
+        String codigo = tcl.nextLine();
         System.out.print("Novo desconto (%): ");
         double desconto = lerDouble();
 
@@ -703,7 +731,7 @@ public class Main {
     private static void removerVoucher() {
         listarVouchers();
         System.out.print("\nCódigo do voucher a remover: ");
-        String codigo = scanner.nextLine();
+        String codigo = tcl.nextLine();
 
         boolean removido = adminController.removerVoucher(codigo);
         if (removido) {
@@ -802,19 +830,19 @@ public class Main {
         System.out.println("(Deixe em branco para manter o valor atual)");
 
         System.out.print("Nome [" + restaurante.getNome() + "]: ");
-        String nome = scanner.nextLine();
+        String nome = tcl.nextLine();
         if (!nome.isEmpty()) restaurante.setNome(nome);
 
         System.out.print("Telefone [" + restaurante.getTelefone() + "]: ");
-        String telefone = scanner.nextLine();
+        String telefone = tcl.nextLine();
         if (!telefone.isEmpty()) restaurante.setTelefone(telefone);
 
         System.out.print("Email [" + restaurante.getEmail() + "]: ");
-        String email = scanner.nextLine();
+        String email = tcl.nextLine();
         if (!email.isEmpty()) restaurante.setEmail(email);
 
         System.out.print("Endereço [" + restaurante.getEndereco() + "]: ");
-        String endereco = scanner.nextLine();
+        String endereco = tcl.nextLine();
         if (!endereco.isEmpty()) restaurante.setEndereco(endereco);
 
         System.out.println("\n✅ Dados atualizados com sucesso!");
@@ -846,9 +874,9 @@ public class Main {
     private static void loginFuncionario() {
         System.out.println("\n--- Login Funcionário ---");
         System.out.print("Login: ");
-        String login = scanner.nextLine();
+        String login = tcl.nextLine();
         System.out.print("Senha: ");
-        String senha = scanner.nextLine();
+        String senha = tcl.nextLine();
 
         Funcionario func = buscarFuncionario(login, senha);
         if (func != null) {
@@ -907,7 +935,7 @@ public class Main {
                 case 0:
                     return;
                 default:
-                    System.out.println("\n❌ Opção inválida!");
+                    System.out.println("\nOpção inválida!");
             }
         }
     }
@@ -915,38 +943,38 @@ public class Main {
     private static void aceitarPedido(Funcionario func) {
         listarPedidosAtivos();
         System.out.print("\nID do pedido a aceitar: ");
-        String id = scanner.nextLine();
+        String id = tcl.nextLine();
 
         Pedido pedido = pedidoController.buscarPedidoPorId(restaurante.getPedidos(), id);
         if (pedido != null) {
             boolean aceito = pedidoController.aceitarPedido(pedido, func);
             if (aceito) {
-                System.out.println("\n✅ Pedido aceito com sucesso!");
+                System.out.println("\nPedido aceito com sucesso!");
             } else {
-                System.out.println("\n❌ Não foi possível aceitar o pedido!");
+                System.out.println("\nNão foi possível aceitar o pedido!");
             }
         } else {
-            System.out.println("\n❌ Pedido não encontrado!");
+            System.out.println("\n Pedido não encontrado!");
         }
     }
 
     private static void marcarPedidoEntregue() {
         listarPedidosAtivos();
         System.out.print("\nID do pedido entregue: ");
-        String id = scanner.nextLine();
+        String id = tcl.nextLine();
 
         Pedido pedido = pedidoController.buscarPedidoPorId(restaurante.getPedidos(), id);
         if (pedido != null) {
             pedidoController.marcarPedidoEntregue(pedido);
-            System.out.println("\n✅ Pedido marcado como entregue!");
+            System.out.println("\nPedido marcado como entregue!");
         } else {
-            System.out.println("\n❌ Pedido não encontrado!");
+            System.out.println("\nPedido não encontrado!");
         }
     }
 
     private static void consultarBonusFuncionario(Funcionario func) {
         double bonus = funcController.consultarBonus(func);
-        System.out.printf("\n💰 Seu bônus acumulado: R$ %.2f\n", bonus);
+        System.out.printf("\nSeu bônus acumulado: R$ %.2f\n", bonus);
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -956,17 +984,17 @@ public class Main {
     private static void loginCliente() {
         System.out.println("\n--- Login Cliente ---");
         System.out.print("Login: ");
-        String login = scanner.nextLine();
+        String login = tcl.nextLine();
         System.out.print("Senha: ");
-        String senha = scanner.nextLine();
+        String senha = tcl.nextLine();
 
         Cliente cliente = buscarCliente(login, senha);
         if (cliente != null) {
-            System.out.println("\n✅ Login realizado com sucesso!");
+            System.out.println("\nLogin realizado com sucesso!");
             System.out.println("Bem-vindo, " + cliente.getNome() + "!");
             menuCliente(cliente);
         } else {
-            System.out.println("\n❌ Login ou senha incorretos!");
+            System.out.println("\nLogin ou senha incorretos!");
         }
     }
 
@@ -1029,7 +1057,7 @@ public class Main {
                 case 0:
                     return;
                 default:
-                    System.out.println("\n❌ Opção inválida!");
+                    System.out.println("\n Opção inválida!");
             }
         }
     }
@@ -1047,7 +1075,7 @@ public class Main {
         if (tipo == 1) {
             tipoAtendimento = TipoAtendimento.LOCAL;
             System.out.print("Código QR da mesa: ");
-            qrCode = scanner.nextLine();
+            qrCode = tcl.nextLine();
         } else {
             tipoAtendimento = TipoAtendimento.RETIRADA;
             qrCode = "QR-RETIRADA";
@@ -1056,7 +1084,7 @@ public class Main {
         Pedido pedido = clienteController.iniciarPedido(cliente, restaurante, tipoAtendimento, qrCode);
 
         if (pedido == null) {
-            System.out.println("\n❌ Erro ao iniciar pedido!");
+            System.out.println("\n Erro ao iniciar pedido!");
             return;
         }
 
@@ -1079,15 +1107,15 @@ public class Main {
 
                     ItemPedido itemPedido = new ItemPedido(itemCardapio, quantidade);
                     itens.add(itemPedido);
-                    System.out.println("\n✅ Item adicionado!");
+                    System.out.println("\n Item adicionado!");
                 } else {
-                    System.out.println("\n❌ Item inválido!");
+                    System.out.println("\n Item inválido!");
                 }
             }
         }
 
         if (itens.isEmpty()) {
-            System.out.println("\n❌ Pedido cancelado - nenhum item adicionado!");
+            System.out.println("\n Pedido cancelado - nenhum item adicionado!");
             return;
         }
 
@@ -1123,7 +1151,10 @@ public class Main {
         clienteController.fecharPedido(cliente, pedido, formaPagto);
         restaurante.adicionarPedido(pedido);
 
-        System.out.println("\n✅ Pedido realizado com sucesso!");
+		// lista global de pedidos
+		listaPedidos.add(pedido);
+
+        System.out.println("\nPedido realizado com sucesso!");
         System.out.printf("Pedido #%s - Total: R$ %.2f\n", pedido.getId(), pedido.getTotal());
     }
 
@@ -1148,33 +1179,33 @@ public class Main {
     private static void avaliarPedido(Cliente cliente) {
         meusPedidos(cliente);
         System.out.print("\nID do pedido a avaliar: ");
-        String id = scanner.nextLine();
+        String id = tcl.nextLine();
         System.out.print("Nota (1-5): ");
         int nota = lerInteiro();
         System.out.print("Comentário: ");
-        String comentario = scanner.nextLine();
+        String comentario = tcl.nextLine();
 
         boolean avaliado = clienteController.avaliarPedido(cliente, id, nota, comentario);
         if (avaliado) {
-            System.out.println("\n✅ Avaliação registrada com sucesso!");
+            System.out.println("\nAvaliação registrada com sucesso!");
         } else {
-            System.out.println("\n❌ Erro ao avaliar pedido!");
+            System.out.println("\nErro ao avaliar pedido!");
         }
     }
 
     private static void cadastrarCartao(Cliente cliente) {
         System.out.println("\n--- Cadastrar Cartão ---");
         System.out.print("Número do cartão: ");
-        String numero = scanner.nextLine();
+        String numero = tcl.nextLine();
         System.out.print("Nome do titular: ");
-        String titular = scanner.nextLine();
+        String titular = tcl.nextLine();
         System.out.print("Validade (MM/AA): ");
-        String validade = scanner.nextLine();
+        String validade = tcl.nextLine();
         System.out.print("CVV: ");
-        String cvv = scanner.nextLine();
+        String cvv = tcl.nextLine();
 
         clienteController.cadastrarCartao(cliente, numero, titular, validade, cvv);
-        System.out.println("\n✅ Cartão cadastrado com sucesso!");
+        System.out.println("\nCartão cadastrado com sucesso!");
     }
 
     private static void listarCartoes(Cliente cliente) {
@@ -1197,31 +1228,31 @@ public class Main {
         System.out.println("(Deixe em branco para manter o valor atual)");
 
         System.out.print("Nome [" + cliente.getNome() + "]: ");
-        String nome = scanner.nextLine();
+        String nome = tcl.nextLine();
         if (!nome.isEmpty()) cliente.setNome(nome);
 
         System.out.print("Telefone [" + cliente.getTelefone() + "]: ");
-        String telefone = scanner.nextLine();
+        String telefone = tcl.nextLine();
         if (!telefone.isEmpty()) cliente.setTelefone(telefone);
 
         System.out.print("Email [" + cliente.getEmail() + "]: ");
-        String email = scanner.nextLine();
+        String email = tcl.nextLine();
         if (!email.isEmpty()) cliente.setEmail(email);
 
         clienteController.editarDadosPessoais(cliente);
-        System.out.println("\n✅ Dados atualizados com sucesso!");
+        System.out.println("\nDados atualizados com sucesso!");
     }
 
     private static void consultarVoucher() {
         System.out.print("\nCódigo do voucher: ");
-        String codigo = scanner.nextLine();
+        String codigo = tcl.nextLine();
 
         boolean valido = clienteController.consultarVoucher(restaurante, codigo);
         if (valido) {
             double desconto = restaurante.getDescontoVoucher(codigo);
-            System.out.printf("\n✅ Voucher válido! Desconto: %.1f%%\n", desconto);
+            System.out.printf("\n Voucher válido! Desconto: %.1f%%\n", desconto);
         } else {
-            System.out.println("\n❌ Voucher inválido!");
+            System.out.println("\nVoucher inválido!");
         }
     }
 
@@ -1232,7 +1263,7 @@ public class Main {
     private static int lerInteiro() {
         while (true) {
             try {
-                String input = scanner.nextLine();
+                String input = tcl.nextLine();
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 System.out.print("Por favor, digite um número válido: ");
@@ -1243,11 +1274,46 @@ public class Main {
     private static double lerDouble() {
         while (true) {
             try {
-                String input = scanner.nextLine();
+                String input = tcl.nextLine();
                 return Double.parseDouble(input);
             } catch (NumberFormatException e) {
                 System.out.print("Por favor, digite um valor válido: ");
             }
         }
     }
+
+	private static String lerSenhaSegura() {
+		while (true) {
+			String senha = tcl.nextLine();
+
+			if (senha.length() < 8) {
+				System.out.print("Senha muito curta. Deve ter pelo menos 8 caracteres. Digite novamente: ");
+				continue;
+			}
+			if (!senha.matches(".*[A-Z].*")) {
+				System.out.print("A senha deve ter pelo menos 1 letra MAIÚSCULA. Digite novamente: ");
+				continue;
+			}
+			if (!senha.matches(".*[a-z].*")) {
+				System.out.print("A senha deve ter pelo menos 1 letra minúscula. Digite novamente: ");
+				continue;
+			}
+			if (!senha.matches(".*\\d.*")) {
+				System.out.print("A senha deve ter pelo menos 1 número. Digite novamente: ");
+				continue;
+			}
+
+			// Se passou em todos os critérios, retorna
+			return senha;
+		}
+	}
+
+	private static boolean loginUsado(String login) {
+		for (Cliente c : clientes) {
+			if (c.getLogin().equalsIgnoreCase(login)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

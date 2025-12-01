@@ -18,7 +18,8 @@ public class FuncionarioService implements IDGenerator {
 	}
 
 	public void cadastrar(Funcionario f) {
-		f.setId(gerarId()); // usa o mét0do da interface, implementado logo abixo
+		f.setId(gerarId());
+		System.out.println("[DEBUG] ID gerado: " + f.getId());
 		funcionarios.add(f);
 	}
 
