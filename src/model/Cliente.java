@@ -1,6 +1,5 @@
 package model;
 
-import model.interfaces.IDGenerator;
 import model.interfaces.PermissaoPedido;
 
 import java.time.LocalDateTime;
@@ -8,7 +7,7 @@ import java.util.*;
 
 public class Cliente extends Pessoa implements PermissaoPedido {
 
-	private String mesa;
+	private Mesa mesa;
 	private String codigoRecup;
 	private boolean isAdmin = false;
 	private Restaurante restaurante;
@@ -34,13 +33,11 @@ public class Cliente extends Pessoa implements PermissaoPedido {
 	// =====================
 
 
-	public String getMesa() {
+	public Mesa getMesa() {
 		return mesa;
 	}
 
-
-
-	public void setMesa(String mesa) {
+	public void setMesa(Mesa mesa) {
 		this.mesa = mesa;
 	}
 

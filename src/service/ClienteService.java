@@ -6,7 +6,8 @@ import model.Cliente;
 import model.ItemPedido;
 import model.Pedido;
 import model.Restaurante;
-import model.interfaces.IDGenerator;
+import enums.StatusPedido;
+import model.Mesa;
 
 import java.util.*;
 
@@ -14,6 +15,72 @@ public class ClienteService {
 
 	private List<Cliente> clientes = new ArrayList<>();
 	private Map<String, List<String>> cartoesPorCliente = new HashMap<>();
+	private PedidoService pedidoService;
+
+	public ClienteService() {}
+
+	public ClienteService(PedidoService pedidoService) {
+		this.pedidoService = pedidoService;
+	}
+
+	public Pedido iniciarPedido(Cliente cliente,
+								Restaurante restaurante,
+								TipoAtendimento tipoAtendimento,
+								String qrCodeLido) {
+
+		if (cliente == null || restaurante == null || tipoAtendimento == null || qrCodeLido == null) {
+			return null;
+		}
+
+		Mesa mesa = cliente.getMesa();
+
+		if (!validarQrCode(mesa, qrCodeLido)) {
+			System.out.println("QR code inválido para esta mesa. Não é possível iniciar o pedido.");
+			return null;
+		}
+
+		if (mesa != null && !mesa.isVirtual()) {
+			List<Pedido> pedidosAtuais = pedidoService.listarPedidos();
+
+			boolean mesaOcupada = pedidosAtuais.stream()
+					.anyMatch(p -> mesa.equals(p.getMesa()) && !p.isEntregue());
+
+			if (mesaOcupada) {
+				System.out.println("Não é possível iniciar novo pedido: a mesa já está ocupada.");
+				return null;
+			}
+		}
+
+		Pedido novoPedido = new Pedido(cliente, restaurante, qrCodeLido);
+
+		if (mesa != null) {
+			novoPedido.setMesa(mesa);
+
+			if (!mesa.isVirtual()) {
+				mesa.setOcupada(true);
+			}
+		}
+
+		novoPedido.setTipoAtendimento(tipoAtendimento);
+		novoPedido.setStatusPedido(StatusPedido.ABERTO);
+		novoPedido.setPago(false);
+		novoPedido.setFormaPagto(null);
+
+		pedidoService.cadastrarPedido(novoPedido);
+		cliente.getPedidos().add(novoPedido);
+		restaurante.adicionarPedido(novoPedido);
+
+		return novoPedido;
+	}
+
+	private boolean validarQrCode(Mesa mesa, String qrCodeLido) {
+		if (mesa == null || qrCodeLido == null) {
+			return false;
+		}
+
+		String qrCodeMesa = mesa.getQrCode();
+		return qrCodeMesa != null && qrCodeMesa.equals(qrCodeLido);
+	}
 
 
 	public void salvar(Cliente cliente) {
@@ -42,23 +109,6 @@ public class ClienteService {
 				break;
 			}
 		}
-	}
-
-	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, TipoAtendimento tipoAtendimento) {
-		if (cliente == null || restaurante == null || tipoAtendimento == null) {
-			return null;
-		}
-
-		String identificador = cliente.getMesa() != null ? cliente.getMesa() : cliente.getNome();
-		Pedido novoPedido = new Pedido(identificador, tipoAtendimento);
-
-		novoPedido.setCliente(cliente);
-		novoPedido.setRestaurante(restaurante);
-
-		cliente.getPedidos().add(novoPedido);
-		restaurante.adicionarPedido(novoPedido);
-
-		return novoPedido;
 	}
 
 	public void editarPedido(Cliente cliente, Pedido pedido, List<ItemPedido> novosItens) {
@@ -134,4 +184,5 @@ public class ClienteService {
 	public boolean deletarConta(Cliente cliente) {
 		return clientes.removeIf(c -> c.getId().equals(cliente.getId()));
 
+	}
 }

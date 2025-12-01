@@ -16,9 +16,19 @@ public class Restaurante {
 	private Administrador administrador;
 	private List<ItemCardapio> menu = new ArrayList<>();
 	private Map<String, String> mapaMesas;
-	private List<Pedido> pedidos;
 	private List<Funcionario> funcionarios;
 	private double TxEntregaPrioritaria, TxCancelamento;
+	private List<Mesa> mesas = new ArrayList<>();
+	private List<Pedido> pedidos = new ArrayList<>();
+
+	private static final Map<String, String> QR_CODE_MESA = new HashMap<>();
+
+	static {
+		QR_CODE_MESA.put("QR-MESA-01", "1");
+		QR_CODE_MESA.put("QR-MESA-02", "2");
+		QR_CODE_MESA.put("QR-MESA-03", "3");
+		QR_CODE_MESA.put("QR-RETIRADA", "VIRTUAL");
+	}
 
 	// ============================
 	// CONSTRUTOR

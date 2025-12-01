@@ -2,7 +2,6 @@ package service;
 
 import enums.FormaPagto;
 import enums.StatusPedido;
-import enums.TipoAtendimento;
 import model.*;
 import model.interfaces.IDGenerator;
 
@@ -12,28 +11,6 @@ public class PedidoService implements IDGenerator {
 	private final Set<String> idsPedido = new HashSet<>();
 	private final Random random = new Random();
 	private final List<Pedido> pedidos = new ArrayList<>();
-
-	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, TipoAtendimento tipoAtendimento) {
-		if (cliente == null || restaurante == null || tipoAtendimento == null) {
-			return null;
-		}
-
-		Pedido novoPedido = new Pedido();
-		novoPedido.setId(gerarId());
-		novoPedido.setCliente(cliente);
-		novoPedido.setRestaurante(restaurante);
-		novoPedido.setTipoAtendimento(tipoAtendimento);
-
-		// Se o cliente estiver em uma mesa
-		if (cliente.getMesa() != null) {
-			novoPedido.setMesa(cliente.getMesa());
-		}
-
-		cliente.getPedidos().add(novoPedido);
-		restaurante.adicionarPedido(novoPedido);
-
-		return novoPedido;
-	}
 
 	@Override
 	public String gerarId() {
@@ -48,12 +25,6 @@ public class PedidoService implements IDGenerator {
 
 		idsPedido.add(id);
 		return id;
-	}
-
-	public void cadastrar(Pedido p) {
-		p.setId(gerarId());
-		pedidos.add(p);
-		System.out.println("Pedido cadastrado | ID Pedido: " + p.getId());
 	}
 
 	public List<Pedido> listarPedidos() {
@@ -88,13 +59,39 @@ public class PedidoService implements IDGenerator {
 		return true;
 	}
 
-	public boolean aceitarPedido(Pedido pedido) {
-		if (pedido != null && !pedido.getItens().isEmpty()) {
-			pedido.setStatusPedido(enums.StatusPedido.EM_PREPARO);
-			return true;
+	public boolean aceitarPedido(Pedido pedido, Funcionario funcionario) {
+		if (pedido == null || funcionario == null) {
+			return false;
 		}
-		return false;
+
+		if (pedido.isEntregue()) {
+			System.out.println("Não é possível aceitar um pedido já entregue.");
+			return false;
+		}
+
+		if (pedido.getFuncionarioResponsavel() != null) {
+			System.out.println("Este pedido já possui um funcionário responsável.");
+			return false;
+		}
+
+		pedido.setFuncionarioResponsavel(funcionario);
+		pedido.setStatusPedido(StatusPedido.EM_PREPARO);
+
+		return true;
 	}
+
+	public void cadastrarPedido(Pedido pedido) {
+		if (pedido == null) {
+			return;
+		}
+
+		// gera ID do pedido antes de salvar
+		pedido.setId(gerarId());
+
+		pedidos.add(pedido);
+		System.out.println("Pedido cadastrado | ID Pedido: " + pedido.getId());
+	}
+
 
 	public boolean pagarPedido(Pedido pedido, FormaPagto formaPagto) {
 		if (pedido != null && !pedido.isPago()) {

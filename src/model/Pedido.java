@@ -18,7 +18,9 @@ public class Pedido {
 	private double total;
 	private boolean entregue;
 	private Restaurante restaurante;
-	private String mesa, justifRecusa;
+	private Mesa mesa;
+	private String qrCode;
+	private String justifRecusa;
 	private List<ItemPedido> itens;
 	private StatusPedido statusPedido = StatusPedido.EM_PREPARO;
 	private TipoAtendimento tipoAtendimento;
@@ -32,14 +34,17 @@ public class Pedido {
 	public Pedido(){}
 
 	public Pedido (Cliente cliente, Restaurante restaurante,
-				   Funcionario funcionarioResponsavel,double total) {
+				   String qrCode) {
+		this.cliente = cliente;
+		this.restaurante = restaurante;
+		this.qrCode = qrCode;
 		this.itens = new ArrayList<>();
-		this.statusPedido = StatusPedido.EM_PREPARO;
+		this.statusPedido = StatusPedido.ABERTO;
 		this.justifRecusa = null;
 		this.entregue = false;
-		this.total = total;
-		this.funcionarioResponsavel = funcionarioResponsavel;
+		this.total = 0.0;
 		this.criadoEm = LocalDateTime.now();
+		this.pago = false;
 	}
 	/* a terceira linha do mét0do define que o nr da mesa só será definido se o atendimento for local;
 	se for para viagem, a  mesa ficará com valor nulo (null). */
@@ -210,11 +215,11 @@ public class Pedido {
 		this.pago = pago;
 	}
 
-	public String getMesa() {
+	public Mesa getMesa() {
 		return mesa;
 	}
 
-	public void setMesa(String mesa) {
+	public void setMesa(Mesa mesa) {
 		this.mesa = mesa;
 	}
 

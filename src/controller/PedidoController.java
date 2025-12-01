@@ -11,16 +11,12 @@ public class PedidoController {
 
 	private PedidoService pedidoService = new PedidoService();
 
-	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, String mesaOuNome, TipoAtendimento tipoAtendimento) {
-		return pedidoService.iniciarPedido(cliente, restaurante, tipoAtendimento);
-	}
-
 	public boolean editarPedido(Pedido pedido, List<ItemPedido> novosItens) {
 		return pedidoService.editarPedido(pedido, novosItens);
 	}
 
-	public boolean fecharPedido(Pedido pedido) {
-		return pedidoService.aceitarPedido(pedido);
+	public boolean aceitarPedido(Pedido pedido, Funcionario funcionario) {
+		return pedidoService.aceitarPedido(pedido, funcionario);
 	}
 
 	public boolean pagarPedido(Pedido pedido, FormaPagto formaPagto) {
@@ -34,4 +30,18 @@ public class PedidoController {
 	public Pedido buscarPedidoPorId(List<Pedido> pedidos, String id) {
 		return pedidoService.buscarPedido(pedidos, id);
 	}
+
+	public void marcarPedidoEntregue(Pedido pedido) {
+		if (pedido == null || pedido.isEntregue()) {
+			return;
+		}
+
+		pedido.setEntregue(true); // ou pedido.setStatusPedido(StatusPedido.ENTREGUE);
+
+		Mesa mesa = pedido.getMesa();
+		if (mesa != null && !mesa.isVirtual()) {
+			mesa.setOcupada(false);
+		}
+	}
+
 }

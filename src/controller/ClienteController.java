@@ -36,8 +36,8 @@ public class ClienteController {
 
 	// PEDIDOS
 
-	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, TipoAtendimento tipo) {
-		return clienteService.iniciarPedido(cliente, restaurante, tipo);
+	public Pedido iniciarPedido(Cliente cliente, Restaurante restaurante, TipoAtendimento tipo, String qrCode) {
+		return clienteService.iniciarPedido(cliente, restaurante, tipo, qrCode);
 	}
 
 	public void editarPedido(Cliente cliente, Pedido pedido, List<ItemPedido> itens) {
